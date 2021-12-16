@@ -33,3 +33,6 @@ android {
         minSdkVersion 16
     }
 }
+dependencies {
+    api "com.github.microshow:RxFFmpeg:4.9.0-lite"
+}
