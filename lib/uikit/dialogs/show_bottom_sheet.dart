@@ -1,3 +1,4 @@
+import 'package:eyflutter_core/eyflutter_core.dart';
 import 'package:flutter/cupertino.dart';
 
 typedef DidSelectIndexCallback = void Function(int index);
@@ -5,11 +6,11 @@ typedef DidSelectCancelCallback = void Function();
 
 csShowBottomSheet(
   BuildContext context, {
-  String title,
-  @required List<String> actions,
+  String? title,
+  required List<String> actions,
   String cancel = '取消',
-  DidSelectIndexCallback indexCallback,
-  DidSelectCancelCallback cancelCallback,
+  DidSelectIndexCallback? indexCallback,
+  DidSelectCancelCallback? cancelCallback,
 }) {
   List<Widget> widgets = [];
   actions.asMap().forEach((int index, String value) {
@@ -27,9 +28,9 @@ csShowBottomSheet(
       context: context,
       builder: (BuildContext context) {
         var sheet = CupertinoActionSheet(
-          title: Text(title),
+          title: Text(title ?? ""),
           actions: widgets,
-          cancelButton: cancel == null
+          cancelButton: cancel.isEmptyString
               ? SizedBox.shrink()
               : CupertinoActionSheetAction(
                   child: Text(cancel),
@@ -44,4 +45,3 @@ csShowBottomSheet(
         return sheet;
       });
 }
-

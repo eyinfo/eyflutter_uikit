@@ -15,19 +15,19 @@ class RefreshHeaderController extends StatefulWidget {
       this.refreshIndicatorExtent});
 
   final BuildContext context;
-  final RefreshMode mode;
-  final double pulledExtent;
-  final double refreshTriggerPullDistance;
-  final Duration completeDuration;
-  final double height;
-  final bool enableInfiniteRefresh;
-  final double refreshIndicatorExtent;
+  final RefreshMode? mode;
+  final double? pulledExtent;
+  final double? refreshTriggerPullDistance;
+  final Duration? completeDuration;
+  final double? height;
+  final bool? enableInfiniteRefresh;
+  final double? refreshIndicatorExtent;
 
   //是否刷新成功
-  final bool success;
+  final bool? success;
 
   //true-已经没有数据了;false-还有其它数据;
-  final bool noMore;
+  final bool? noMore;
 
   @override
   State<StatefulWidget> createState() => _RefreshHeaderControllerState();
@@ -52,7 +52,7 @@ class _RefreshHeaderControllerState extends State<RefreshHeaderController> {
   set refreshFinish(bool finish) {
     if (_refreshFinish != finish) {
       if (finish) {
-        Future.delayed(widget.completeDuration, () {
+        Future.delayed(widget.completeDuration ?? Duration.zero, () {
           _refreshFinish = false;
         });
       }
@@ -64,7 +64,7 @@ class _RefreshHeaderControllerState extends State<RefreshHeaderController> {
   Widget build(BuildContext context) {
     // 是否到达触发刷新距离
     overTriggerDistance =
-        widget.mode != RefreshMode.inactive && widget.pulledExtent >= widget.refreshTriggerPullDistance;
+        widget.mode != RefreshMode.inactive && ((widget.pulledExtent ?? 0) >= (widget.refreshTriggerPullDistance ?? 0));
     if (widget.mode == RefreshMode.refreshed) {
       refreshFinish = true;
     }
@@ -75,8 +75,9 @@ class _RefreshHeaderControllerState extends State<RefreshHeaderController> {
     final double width = (screenWidth - 28);
 
     return Container(
-//      color: Color(0xfff6f6f6),
-      height: widget.refreshIndicatorExtent > widget.pulledExtent ? widget.refreshIndicatorExtent : widget.pulledExtent,
+      height: ((widget.refreshIndicatorExtent ?? 0) > (widget.pulledExtent ?? 0))
+          ? widget.refreshIndicatorExtent
+          : widget.pulledExtent,
       child: Flex(
         direction: Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -101,7 +102,7 @@ class _RefreshHeaderControllerState extends State<RefreshHeaderController> {
               textAlign: TextAlign.center,
               style: TextStyle(
                   letterSpacing: 0.82,
-                  color: Color(RefreshInitManager.instance.headerHandler().headerTextColor() ?? 0xff666666),
+                  color: Color(RefreshInitManager.instance.headerHandler()?.headerTextColor() ?? 0xffffffff),
                   decoration: TextDecoration.none,
                   fontSize: 14),
             ),
@@ -112,35 +113,35 @@ class _RefreshHeaderControllerState extends State<RefreshHeaderController> {
   }
 
   String get _finishedText {
-    if (!widget.success) {
-      return RefreshInitManager.instance.headerHandler().refreshFailedText();
+    if (!(widget.success ?? false)) {
+      return RefreshInitManager.instance.headerHandler()?.refreshFailedText() ?? "";
     }
-    return RefreshInitManager.instance.headerHandler().completeText();
+    return RefreshInitManager.instance.headerHandler()?.completeText() ?? "";
   }
 
   String get _showText {
-    if (widget.enableInfiniteRefresh) {
+    if (widget.enableInfiniteRefresh ?? false) {
       if (widget.mode == RefreshMode.refreshed ||
           widget.mode == RefreshMode.inactive ||
           widget.mode == RefreshMode.drag) {
         return _finishedText;
       } else {
-        return RefreshInitManager.instance.headerHandler().refreshingText();
+        return RefreshInitManager.instance.headerHandler()?.refreshingText() ?? "";
       }
     }
     switch (widget.mode) {
       case RefreshMode.refresh:
       case RefreshMode.armed:
-        return RefreshInitManager.instance.headerHandler().refreshingText();
+        return RefreshInitManager.instance.headerHandler()?.refreshingText() ?? "";
       case RefreshMode.refreshed:
         return _finishedText;
       case RefreshMode.done:
         return _finishedText;
       default:
         if (overTriggerDistance) {
-          return RefreshInitManager.instance.headerHandler().releaseText();
+          return RefreshInitManager.instance.headerHandler()?.releaseText() ?? "";
         } else {
-          return RefreshInitManager.instance.headerHandler().idleText();
+          return RefreshInitManager.instance.headerHandler()?.idleText() ?? "";
         }
     }
   }

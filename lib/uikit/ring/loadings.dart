@@ -20,8 +20,8 @@ enum LoadingStyle {
 }
 
 class _OverlayLoadingEntry {
-  OverlayLoadingBuilder overlayLoadingBuilder;
-  bool isShow;
+  OverlayLoadingBuilder? overlayLoadingBuilder;
+  bool? isShow;
 }
 
 /// 加载框
@@ -29,30 +29,27 @@ class Loadings {
   factory Loadings() => _getInstance();
 
   static Loadings get instance => _getInstance();
-  static Loadings _instance;
+  static Loadings? _instance;
 
   static Loadings _getInstance() {
-    if (_instance == null) {
-      _instance = new Loadings._internal();
-    }
-    return _instance;
+    return _instance ??= new Loadings._internal();
   }
 
   Loadings._internal();
 
   bool _isGlobal = false;
   bool _isShow = false;
-  OverlayLoadingBuilder _overlayLoadingBuilder;
-  BuildContext _context;
+  OverlayLoadingBuilder? _overlayLoadingBuilder;
+  BuildContext? _context;
 
   //style==LoadingStyle.aloneOverlay时有用
   Map<String, _OverlayLoadingEntry> overlayLoadingMap = {};
 
   /// 设置loadings回调
-  void setLoadingsMethodCall({@required BuildContext context}) {
-    CloudChannelManager.instance.channel.setMethodCallHandler((call) {
+  void setLoadingsMethodCall({required BuildContext context}) {
+    CloudChannelManager.instance.channel?.setMethodCallHandler((call) {
       _nativeLoadingsHandler(call, context);
-      return null;
+      return Future.value();
     });
   }
 
@@ -64,7 +61,7 @@ class Loadings {
     } else if (call.method == "44145e78050cd4cf" && (call.arguments is String)) {
       //dismiss loading
       String overlayKey = call.arguments as String;
-      this.dismiss(overlayKey: overlayKey ?? "");
+      this.dismiss(overlayKey: overlayKey);
     }
   }
 
@@ -78,15 +75,12 @@ class Loadings {
       {LoadingStyle style = LoadingStyle.overlay,
       LoadingType type = LoadingType.classic,
       String overlayKey = '',
-      String text}) {
-    if (context == null) {
-      return;
-    }
+      String? text}) {
     if (style == LoadingStyle.overlay || style == LoadingStyle.aloneOverlay) {
-      _showOverlay(context, text, type, style == LoadingStyle.aloneOverlay, overlayKey);
+      _showOverlay(context, text ?? "", type, style == LoadingStyle.aloneOverlay, overlayKey);
     } else if (style == LoadingStyle.global) {
       _isGlobal = true;
-      _showGlobal(context, text, type);
+      _showGlobal(context, text ?? "", type);
     }
   }
 
@@ -102,12 +96,12 @@ class Loadings {
       {LoadingStyle style = LoadingStyle.overlay,
       LoadingType type = LoadingType.classic,
       String overlayKey = '',
-      String text,
+      String? text,
       Duration duration = const Duration(seconds: 2),
-      void Function() complete}) {
+      void Function()? complete}) {
     show(context, style: style, type: type, overlayKey: overlayKey, text: text);
     Future.delayed(duration, () {
-      _instance.dismiss();
+      _instance?.dismiss();
       if (complete != null) {
         complete();
       }
@@ -116,7 +110,7 @@ class Loadings {
 
   /// 销毁loading
   /// [overlayKey] 对应style==LoadingStyle.aloneOverlay loading
-  void dismiss({String overlayKey}) {
+  void dismiss({String? overlayKey}) {
     if (overlayKey.isEmptyString) {
       _dismissOverlay();
     } else {
@@ -133,8 +127,8 @@ class Loadings {
       dismiss();
     } else {
       overlayLoadingMap.forEach((key, value) {
-        value?.overlayLoadingBuilder?.dismiss(animation: false);
-        value?.isShow = false;
+        value.overlayLoadingBuilder?.dismiss(animation: false);
+        value.isShow = false;
       });
       overlayLoadingMap.clear();
     }
@@ -144,9 +138,9 @@ class Loadings {
   bool get isShowing => _isShow;
 
   void _dismissGlobal() {
-    if (_isGlobal && _isShow && _context != null) {
+    if (_isGlobal && _isShow) {
       _isGlobal = false;
-      Navigator.of(_context).pop();
+      Navigator.of(_context!).pop();
     }
   }
 
@@ -182,7 +176,7 @@ class Loadings {
   void _showOverlay(
       BuildContext context, String text, LoadingType loadingType, bool isAloneOverlay, String overlayKey) {
     bool isAlone = (isAloneOverlay && overlayKey.isNotEmptyString);
-    if (!isAlone && _overlayLoadingBuilder != null) {
+    if (!isAlone) {
       //最好先销毁上一个loading,否则如果列表条目中有loading效果且在快速点击时当前操作可能无效;
       dismiss();
     }
@@ -208,13 +202,11 @@ class Loadings {
   }
 
   void _dismissOverlay() {
-    if (_overlayLoadingBuilder != null) {
-      _overlayLoadingBuilder.dismiss(animation: false);
-      _overlayLoadingBuilder = null;
-    }
+    _overlayLoadingBuilder?.dismiss(animation: false);
+    _overlayLoadingBuilder = null;
   }
 
-  void _dismissOverlayByEntry(String overlayKey) {
+  void _dismissOverlayByEntry(String? overlayKey) {
     if (overlayLoadingMap.containsKey(overlayKey)) {
       var remove = overlayLoadingMap.remove(overlayKey);
       remove?.overlayLoadingBuilder?.dismiss(animation: false);

@@ -42,21 +42,21 @@ enum ActionBarLayoutStruct {
 }
 
 class ActionBarStructItem {
-  ActionBarStructItem({this.struct, this.leadingKeys, this.actionsKeys, this.themeKey});
+  ActionBarStructItem({this.struct, this.leadingKeys, this.actionsKeys, this.themeKey, this.pageTag});
 
-  ActionBarLayoutStruct struct;
+  ActionBarLayoutStruct? struct;
 
   //左边控件对应的Key值
-  List<String> leadingKeys;
+  List<String>? leadingKeys;
 
   //右边控件对应的Key值
-  List<String> actionsKeys;
+  List<String>? actionsKeys;
 
   //中间主题控件对应的Key值
-  String themeKey;
+  String? themeKey;
 
   //页面标识
-  String pageTag;
+  String? pageTag;
 }
 
 class ActionBar extends StatefulWidget implements PreferredSizeWidget {
@@ -67,7 +67,7 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isVisibleActionBar;
 
   /// 两边自定义视图预留的最大宽度(默认自适应)
-  final double edgesWidgetWidth;
+  final double? edgesWidgetWidth;
 
   /// 背景颜色
   final Color backgroundColor;
@@ -76,25 +76,25 @@ class ActionBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isShowDivider;
 
   /// 标题前面显示的按钮控件
-  final List<Widget> leadingActions;
+  final List<Widget>? leadingActions;
 
   /// 操作项
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
   /// 内容部件
-  final Widget content;
+  final Widget? content;
 
   /// 扩展数据
   final dynamic extra;
 
   /// action button点击(left button or right button)
-  final ActionClickHandle actionClick;
+  final ActionClickHandle? actionClick;
 
   /// content float
   final bool isFloatContent;
 
   const ActionBar(
-      {Key key,
+      {Key? key,
       this.height = 46,
       this.isVisibleActionBar = true,
       this.edgesWidgetWidth,
@@ -149,8 +149,8 @@ class _ActionBarState extends State<ActionBar> {
 
   List<Widget> _prepareStackWidget() {
     LinkedHashSet<Widget> map = new LinkedHashSet();
-    if (widget.edgesWidgetWidth != null && widget.edgesWidgetWidth > 0) {
-      map.add(_groupWidget(_modifiedWidgets(widget.leadingActions), Alignment.centerLeft));
+    if (widget.edgesWidgetWidth != null && (widget.edgesWidgetWidth ?? 0) > 0) {
+      map.add(_groupWidget(_modifiedWidgets(widget.leadingActions ?? []), Alignment.centerLeft));
     } else {
       map.add(Expanded(
         child: Center(
@@ -160,13 +160,13 @@ class _ActionBarState extends State<ActionBar> {
       map.add(Positioned(
         left: 0,
         child: Row(
-          children: _modifiedWidgets(widget.leadingActions),
+          children: _modifiedWidgets(widget.leadingActions ?? []),
         ),
       ));
       map.add(Positioned(
         right: 0,
         child: Row(
-          children: _modifiedWidgets(widget.actions),
+          children: _modifiedWidgets(widget.actions ?? []),
         ),
       ));
     }
@@ -175,27 +175,27 @@ class _ActionBarState extends State<ActionBar> {
 
   List<Widget> _prepareWidget() {
     LinkedHashSet<Widget> map = new LinkedHashSet();
-    if (widget.edgesWidgetWidth != null && widget.edgesWidgetWidth > 0) {
-      map.add(_groupWidget(_modifiedWidgets(widget.leadingActions), Alignment.centerLeft));
+    if (widget.edgesWidgetWidth != null && (widget.edgesWidgetWidth ?? 0) > 0) {
+      map.add(_groupWidget(_modifiedWidgets(widget.leadingActions ?? []), Alignment.centerLeft));
     } else {
-      map.addAll(_modifiedWidgets(widget.leadingActions));
+      map.addAll(_modifiedWidgets(widget.leadingActions ?? []));
     }
     map.add(Expanded(
       child: Center(
         child: widget.content,
       ),
     ));
-    if (widget.edgesWidgetWidth != null && widget.edgesWidgetWidth > 0) {
-      map.add(_groupWidget(_modifiedWidgets(widget.actions), Alignment.centerRight));
+    if (widget.edgesWidgetWidth != null && (widget.edgesWidgetWidth ?? 0) > 0) {
+      map.add(_groupWidget(_modifiedWidgets(widget.actions ?? []), Alignment.centerRight));
     } else {
-      map.addAll(_modifiedWidgets(widget.actions));
+      map.addAll(_modifiedWidgets(widget.actions ?? []));
     }
     return map.toList();
   }
 
   List<Widget> _modifiedWidgets(List<Widget> widgets) {
     LinkedHashSet<Widget> map = new LinkedHashSet();
-    widgets?.forEach((Widget wg) {
+    widgets.forEach((Widget wg) {
       var action = getActionKey(wg);
       _buildItem(map, wg, action);
     });
@@ -220,7 +220,7 @@ class _ActionBarState extends State<ActionBar> {
       child: wg,
       onPressed: () {
         if (widget.actionClick != null) {
-          widget.actionClick(action, widget.extra);
+          widget.actionClick!(action, widget.extra);
         }
       },
       style: ButtonStyle(

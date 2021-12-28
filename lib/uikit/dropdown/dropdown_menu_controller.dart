@@ -7,7 +7,7 @@ class DropdownMenuController extends ChangeNotifier {
   ///
   /// Since the DropDownMenu actually returns a Positioned widget, the DropDownMenu must be inside the Stack
   /// vertically.
-  double dropDownMenuTop;
+  double? dropDownMenuTop;
 
   /// Current or last dropdown menu index, default is 0.
   int menuIndex = 0;

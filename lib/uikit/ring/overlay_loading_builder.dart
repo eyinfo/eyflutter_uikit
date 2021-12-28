@@ -5,14 +5,14 @@ import 'package:flutter/widgets.dart';
 import 'cs_loading_container.dart';
 
 class OverlayLoadingBuilder {
-  OverlayEntry _overlayEntry;
-  GlobalKey<CsLoadingContainerState> _key;
+  OverlayEntry? _overlayEntry;
+  GlobalKey<CsLoadingContainerState>? _key;
 
-  OverlayEntry get overlayEntry => _overlayEntry;
+  OverlayEntry? get overlayEntry => _overlayEntry;
 
-  GlobalKey<CsLoadingContainerState> get key => _key;
+  GlobalKey<CsLoadingContainerState>? get key => _key;
 
-  void show(BuildContext context, {String text, Widget indicator}) {
+  void show(BuildContext context, {String? text, Widget? indicator}) {
     GlobalKey<CsLoadingContainerState> key = GlobalKey<CsLoadingContainerState>();
     bool _animation = this.overlayEntry == null;
     _remove();
@@ -26,7 +26,7 @@ class OverlayLoadingBuilder {
       ),
     );
 
-    Overlay.of(context).insert(overlayEntry);
+    Overlay.of(context)?.insert(overlayEntry);
     _overlayEntry = overlayEntry;
     _key = key;
   }
@@ -39,7 +39,7 @@ class OverlayLoadingBuilder {
 
   void dismiss({bool animation = true}) async {
     if (animation) {
-      CsLoadingContainerState loadingContainerState = key?.currentState;
+      CsLoadingContainerState? loadingContainerState = key?.currentState;
       if (loadingContainerState != null) {
         final Completer<void> completer = Completer<void>();
         loadingContainerState.dismiss(completer);

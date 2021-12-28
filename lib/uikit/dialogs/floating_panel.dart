@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class FloatingPanel {
-  OverlayEntry _overlayEntry;
-  GlobalKey<_TopFloatingWidgetState> _key;
+  OverlayEntry? _overlayEntry;
+  GlobalKey<_TopFloatingWidgetState>? _key;
 
-  GlobalKey<_TopFloatingWidgetState> get key => _key;
+  GlobalKey<_TopFloatingWidgetState>? get key => _key;
 
-  void show(BuildContext context, Widget contentView, {EdgeInsetsGeometry margin, Color backgroundColor}) {
+  void show(BuildContext context, Widget contentView, {EdgeInsetsGeometry? margin, Color? backgroundColor}) {
     GlobalKey<_TopFloatingWidgetState> key = GlobalKey<_TopFloatingWidgetState>();
     _remove();
     OverlayEntry overlayEntry = OverlayEntry(
@@ -19,7 +19,7 @@ class FloatingPanel {
         backgroundColor: backgroundColor,
       ),
     );
-    Overlay.of(context).insert(overlayEntry);
+    Overlay.of(context)?.insert(overlayEntry);
     _overlayEntry = overlayEntry;
     _key = key;
   }
@@ -32,7 +32,7 @@ class FloatingPanel {
 
   void dismiss({bool animation = true}) async {
     if (animation) {
-      _TopFloatingWidgetState loadingContainerState = key?.currentState;
+      _TopFloatingWidgetState? loadingContainerState = key?.currentState;
       if (loadingContainerState != null) {
         final Completer<void> completer = Completer<void>();
         loadingContainerState.dismiss(completer);
@@ -47,11 +47,11 @@ class FloatingPanel {
 }
 
 class _TopFloatingWidget extends StatefulWidget {
-  final Widget contentView;
-  final EdgeInsetsGeometry margin;
-  final Color backgroundColor;
+  final Widget? contentView;
+  final EdgeInsetsGeometry? margin;
+  final Color? backgroundColor;
 
-  const _TopFloatingWidget({Key key, this.contentView, this.margin, this.backgroundColor}) : super(key: key);
+  const _TopFloatingWidget({Key? key, this.contentView, this.margin, this.backgroundColor}) : super(key: key);
 
   @override
   _TopFloatingWidgetState createState() => _TopFloatingWidgetState();
@@ -59,7 +59,7 @@ class _TopFloatingWidget extends StatefulWidget {
 
 class _TopFloatingWidgetState extends State<_TopFloatingWidget> {
   double _opacity = 0.0;
-  Duration _animationDuration;
+  Duration? _animationDuration;
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _TopFloatingWidgetState extends State<_TopFloatingWidget> {
     setState(() {
       _opacity = 0.0;
     });
-    Future.delayed(_animationDuration, () {
+    Future.delayed(_animationDuration!, () {
       completer.complete();
     });
   }
@@ -87,7 +87,7 @@ class _TopFloatingWidgetState extends State<_TopFloatingWidget> {
   Widget build(BuildContext context) {
     return AnimatedOpacity(
       opacity: _opacity,
-      duration: _animationDuration,
+      duration: _animationDuration!,
       child: Stack(
         children: [
           SizedBox(

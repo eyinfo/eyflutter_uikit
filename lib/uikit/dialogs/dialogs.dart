@@ -10,7 +10,7 @@ class ButtonArgs {
   final String text;
 
   /// 按钮文本颜色
-  final Color color;
+  final Color? color;
 
   /// 是否加粗
   final bool isBold;
@@ -19,18 +19,18 @@ class ButtonArgs {
   final String action;
 
   @deprecated
-  final bool isHighlighted;
+  final bool? isHighlighted;
 
   ButtonArgs({this.text = '', this.color, this.isBold = false, this.action = '', this.isHighlighted});
 }
 
 class DialogEntry {
-  YYDialog dialog;
+  YYDialog? dialog;
 }
 
 class ListItem {
   /// list item text
-  final String text;
+  final String? text;
 
   /// 扩展数据
   final dynamic extra;
@@ -46,13 +46,10 @@ class Dialogs {
   factory Dialogs() => _getInstance();
 
   static Dialogs get instance => _getInstance();
-  static Dialogs _instance;
+  static Dialogs? _instance;
 
   static Dialogs _getInstance() {
-    if (_instance == null) {
-      _instance = new Dialogs._internal();
-    }
-    return _instance;
+    return _instance ??= new Dialogs._internal();
   }
 
   Dialogs._internal();
@@ -75,17 +72,17 @@ class Dialogs {
       double borderRadius = 6,
       String title = '',
       String message = '',
-      Widget contentView,
+      Widget? contentView,
       List<ButtonArgs> buttonArgs = const <ButtonArgs>[],
-      OnButtonPressed buttonPressed,
+      OnButtonPressed? buttonPressed,
       bool isClickOutsideDismiss = false,
-      OnDialogBuildCall buildCall,
-      EdgeInsetsGeometry padding,
-      Gravity gravity,
+      OnDialogBuildCall? buildCall,
+      EdgeInsetsGeometry? padding,
+      Gravity? gravity,
       bool isShowClose = false,
-      TextAlign textAlign,
+      TextAlign? textAlign,
       margin = const EdgeInsets.only(left: 20, right: 20),
-      OnDialogDismissCall dismissCall}) {
+      OnDialogDismissCall? dismissCall}) {
     var entry = DialogEntry();
     var dialogPanel = _MessageDialogPanel(
       backgroundColor: backgroundColor,
@@ -127,12 +124,12 @@ class Dialogs {
       double borderRadius = 6,
       bool isClickOutsideDismiss = false,
       List<ListItem> items = const <ListItem>[],
-      OnListItemPressed itemPressed,
-      OnDialogBuildCall buildCall,
-      Gravity gravity,
+      OnListItemPressed? itemPressed,
+      OnDialogBuildCall? buildCall,
+      Gravity? gravity,
       double dx = 0,
       double dy = 0,
-      OnDialogDismissCall dismissCall}) {
+      OnDialogDismissCall? dismissCall}) {
     var entry = DialogEntry();
     var dialogPanel = _ListDialogPanel(
       backgroundColor: backgroundColor,
@@ -160,10 +157,10 @@ class Dialogs {
   /// [contentView] 组件视图
   /// [margin] 外边距
   FloatingPanel showTopFloatingWidget(
-      {@required BuildContext context,
-      @required Widget contentView,
-      EdgeInsetsGeometry margin,
-      Color backgroundColor}) {
+      {required BuildContext context,
+      required Widget contentView,
+      EdgeInsetsGeometry? margin,
+      Color? backgroundColor}) {
     var floatingPanel = FloatingPanel();
     floatingPanel.show(context, contentView, margin: margin, backgroundColor: backgroundColor);
     return floatingPanel;
@@ -172,15 +169,15 @@ class Dialogs {
 
 class _ListDialogPanel extends StatelessWidget {
   /// 背景颜色(默认白色)
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
-  final List<ListItem> items;
+  final List<ListItem>? items;
 
-  final OnListItemPressed itemPressed;
+  final OnListItemPressed? itemPressed;
 
-  final DialogEntry dialogEntry;
+  final DialogEntry? dialogEntry;
 
-  const _ListDialogPanel({Key key, this.backgroundColor, this.items, this.itemPressed, this.dialogEntry})
+  const _ListDialogPanel({Key? key, this.backgroundColor, this.items, this.itemPressed, this.dialogEntry})
       : super(key: key);
 
   @override
@@ -208,7 +205,7 @@ class _ListDialogPanel extends StatelessWidget {
       onPressed: () {
         dialogEntry?.dialog?.dismiss();
         if (itemPressed != null) {
-          itemPressed(item);
+          itemPressed!(item);
         }
       },
       child: Container(
@@ -217,7 +214,7 @@ class _ListDialogPanel extends StatelessWidget {
         decoration: BoxDecoration(borderRadius: BorderRadius.zero),
         padding: EdgeInsets.only(left: 20, right: 20),
         child: Text(
-          item.text,
+          item.text ?? "",
           style: TextStyle(fontSize: 16, letterSpacing: 0.77, color: Color(0xff222222)),
           textAlign: TextAlign.center,
         ),
@@ -228,12 +225,12 @@ class _ListDialogPanel extends StatelessWidget {
   List<Widget> combItems() {
     List<Widget> lst = [];
     if (items.isNotEmptyList) {
-      var len = items.length;
+      var len = items?.length??0;
       for (var i = 0; i < len; i++) {
         if (i > 0) {
           lst.add(buildDivider());
         }
-        var element = items[i];
+        var element = items![i];
         lst.add(buildItem(element));
       }
     }
@@ -246,27 +243,27 @@ class _MessageDialogPanel extends StatelessWidget {
   final Color backgroundColor;
 
   /// 标题
-  final String title;
+  final String? title;
 
   /// 消息
-  final String message;
+  final String? message;
 
   /// 自定义视图
-  final Widget contentView;
+  final Widget? contentView;
 
   /// 内容对齐(有标题默认居中，无标题默认居左)
-  final TextAlign messageAlign;
+  final TextAlign? messageAlign;
 
   /// 按钮标识(标识顺序为按钮从左到右顺序)
   final List<ButtonArgs> buttonArgs;
 
   /// 操作项回调事件
-  final OnButtonPressed buttonPressed;
+  final OnButtonPressed? buttonPressed;
 
-  final DialogEntry dialogEntry;
+  final DialogEntry? dialogEntry;
 
   /// 内边距
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// 是否显示关闭按钮
   final bool isShowClose;
@@ -287,7 +284,7 @@ class _MessageDialogPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: backgroundColor ?? Colors.white,
+      color: backgroundColor,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: combColumn(),
@@ -310,7 +307,7 @@ class _MessageDialogPanel extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
-          (isShowClose ?? false)
+          (isShowClose)
               ? GestureDetector(
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(30, 2, 30, 2),
@@ -350,7 +347,7 @@ class _MessageDialogPanel extends StatelessWidget {
     );
   }
 
-  TextAlign contentAlign() {
+  TextAlign? contentAlign() {
     if (title.isEmptyString) {
       return messageAlign == null ? TextAlign.left : messageAlign;
     } else {
@@ -395,7 +392,7 @@ class _MessageDialogPanel extends StatelessWidget {
         onPressed: () {
           dialogEntry?.dialog?.dismiss();
           if (buttonPressed != null) {
-            buttonPressed(buttonArgs);
+            buttonPressed!(buttonArgs);
           }
         },
         child: Container(
@@ -426,7 +423,7 @@ class _MessageDialogPanel extends StatelessWidget {
           onPressed: () {
             dialogEntry?.dialog?.dismiss();
             if (buttonPressed != null) {
-              buttonPressed(buttonArgs);
+              buttonPressed!(buttonArgs);
             }
           },
           child: Text(

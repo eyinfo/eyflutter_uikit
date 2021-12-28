@@ -8,24 +8,20 @@ class MediaUtils {
   factory MediaUtils() => _getInstance();
 
   static MediaUtils get instance => _getInstance();
-  static MediaUtils _instance;
+  static MediaUtils? _instance;
 
   MediaUtils._internal();
 
   static MediaUtils _getInstance() {
-    if (_instance == null) {
-      _instance = new MediaUtils._internal();
-    }
-    return _instance;
+    return _instance ??= new MediaUtils._internal();
   }
 
-  Size _size;
-  double _pixelRatio;
-  double _statusBarHeight;
-  double _bottomBarHeight;
+  Size? _size;
+  double? _pixelRatio;
+  double? _statusBarHeight;
+  double? _bottomBarHeight;
   double _designWidth = 0;
-  double _sizeScale = 0;
-  BuildContext _context;
+  BuildContext? _context;
 
   ///强制竖屏
   ///[orientation]当前屏幕方向
@@ -49,13 +45,13 @@ class MediaUtils {
   }
 
   /// 返回全局material上下文
-  BuildContext get context => _context;
+  BuildContext? get context => _context;
 
   Size get _getSize {
     if (_size == null) {
       _size = window.physicalSize;
     }
-    return _size;
+    return _size ?? Size.zero;
   }
 
   /// 屏幕宽度
@@ -75,7 +71,7 @@ class MediaUtils {
     if (_pixelRatio == null || _pixelRatio == 0) {
       _pixelRatio = window.devicePixelRatio;
     }
-    return _pixelRatio;
+    return _pixelRatio ?? 0;
   }
 
   /// 状态栏高度 dp 刘海屏会更高
@@ -83,7 +79,7 @@ class MediaUtils {
     if (_statusBarHeight == null || _statusBarHeight == 0) {
       _statusBarHeight = window.padding.top;
     }
-    return _statusBarHeight / pixelRatio;
+    return (_statusBarHeight ?? 0) / pixelRatio;
   }
 
   /// 底部安全区距离 dp
@@ -91,7 +87,7 @@ class MediaUtils {
     if (_bottomBarHeight == null || _bottomBarHeight == 0) {
       _bottomBarHeight = window.padding.bottom;
     }
-    return _bottomBarHeight / pixelRatio;
+    return (_bottomBarHeight ?? 0) / pixelRatio;
   }
 
   /// 屏幕尺寸比例

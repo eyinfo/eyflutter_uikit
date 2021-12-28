@@ -18,16 +18,16 @@ class DropDownHeader extends StatefulWidget {
   final double dividerHeight;
   final Color dividerColor;
   final DropdownMenuController controller;
-  final OnItemTap onItemTap;
+  final OnItemTap? onItemTap;
   final List<DropDownHeaderItem> items;
   final GlobalKey stackKey;
 
   /// Creates a dropdown header widget, Contains more than one header items.
   DropDownHeader({
-    Key key,
-    @required this.items,
-    @required this.controller,
-    @required this.stackKey,
+    Key? key,
+    required this.items,
+    required this.controller,
+    required this.stackKey,
     this.style = const TextStyle(color: Color(0xFF666666), fontSize: 13),
     this.dropDownStyle = const TextStyle(color: Color(0xFF333333), fontSize: 13),
     this.height = 40,
@@ -46,14 +46,13 @@ class DropDownHeader extends StatefulWidget {
 
 class _DropDownHeaderState extends State<DropDownHeader> with SingleTickerProviderStateMixin {
   bool _isShowDropDownItemWidget = false;
-  double _screenWidth;
-  int _menuCount;
+  double? _screenWidth;
+  int? _menuCount;
   GlobalKey _keyDropDownHeader = GlobalKey();
-  TextStyle _dropDownStyle;
+  TextStyle? _dropDownStyle;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     widget.controller.addListener(_onController);
   }
@@ -67,15 +66,15 @@ class _DropDownHeaderState extends State<DropDownHeader> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     _dropDownStyle = widget.dropDownStyle ?? TextStyle(color: Theme.of(context).primaryColor, fontSize: 13);
-
     MediaQueryData mediaQuery = MediaQuery.of(context);
     _screenWidth = mediaQuery.size.width;
     _menuCount = widget.items.length;
 
     var gridView = GridView.count(
       physics: NeverScrollableScrollPhysics(),
-      crossAxisCount: _menuCount,
-      childAspectRatio: ((_screenWidth - widget.padding.left - widget.padding.right) / _menuCount) / widget.height,
+      crossAxisCount: _menuCount ?? 0,
+      childAspectRatio:
+          (((_screenWidth ?? 0) - widget.padding.left - widget.padding.right) / (_menuCount ?? 0)) / widget.height,
       children: widget.items.map<Widget>((item) {
         return _menu(item);
       }).toList(),
@@ -107,17 +106,11 @@ class _DropDownHeaderState extends State<DropDownHeader> with SingleTickerProvid
 
     return GestureDetector(
       onTap: () {
-        final RenderBox overlay = widget.stackKey.currentContext.findRenderObject() as RenderBox;
-
-        final RenderBox dropDownItemRenderBox = _keyDropDownHeader.currentContext.findRenderObject() as RenderBox;
-
+        final RenderBox overlay = widget.stackKey.currentContext?.findRenderObject() as RenderBox;
+        final RenderBox dropDownItemRenderBox = _keyDropDownHeader.currentContext?.findRenderObject() as RenderBox;
         var position = dropDownItemRenderBox.localToGlobal(Offset.zero, ancestor: overlay);
-//        print("POSITION : $position ");
         var size = dropDownItemRenderBox.size;
-//        print("SIZE : $size");
-
         widget.controller.dropDownMenuTop = size.height + position.dy;
-
         if (index == menuIndex) {
           if (widget.controller.isShow) {
             widget.controller.hide();
@@ -130,11 +123,9 @@ class _DropDownHeaderState extends State<DropDownHeader> with SingleTickerProvid
           }
           widget.controller.show(index);
         }
-
         if (widget.onItemTap != null) {
-          widget.onItemTap(index);
+          widget.onItemTap!(index);
         }
-
         setState(() {});
       },
       child: Container(
@@ -184,7 +175,7 @@ class DropDownHeaderItem {
   final Widget iconData;
   final Widget iconDropDownData;
   final MainAxisAlignment mainAxisAlignment;
-  final TextStyle style;
+  final TextStyle? style;
 
   DropDownHeaderItem(
     this.title, {

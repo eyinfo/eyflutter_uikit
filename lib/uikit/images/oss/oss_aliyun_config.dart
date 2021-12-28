@@ -31,7 +31,7 @@ class OssAliYunConfig {
   /// 按宽度进行等比缩放
   /// [originalUrl] 图片地址
   /// [width] 缩放后图片宽度
-  String getUrlResizeW(String originalUrl, double width) {
+  String getUrlResizeW(String originalUrl, double? width) {
     var arguments = OssImageArguments().builder();
     arguments.resizeW(width);
     arguments.format(ImageFormat.webp);
@@ -41,7 +41,7 @@ class OssAliYunConfig {
   /// 按高度进行等比缩放
   /// [originalUrl] 图片地址
   /// [width] 缩放后图片高度
-  String getUrlResizeH(String originalUrl, double height) {
+  String getUrlResizeH(String originalUrl, double? height) {
     var arguments = OssImageArguments().builder();
     arguments.resizeH(height);
     arguments.format(ImageFormat.webp);
@@ -51,9 +51,9 @@ class OssAliYunConfig {
   /// 图片内切圆
   /// [originalUrl] 图片地址
   /// [radius] 圆半径
-  String getUrlCircle(String originalUrl, double radius) {
+  String getUrlCircle(String originalUrl, double? radius) {
     var arguments = OssImageArguments().builder();
-    arguments.resizeW(radius * 2);
+    arguments.resizeW(2 * (radius ?? 0));
     arguments.circle(radius);
     arguments.format(ImageFormat.webp);
     return getUrl(originalUrl, arguments.toBuffer());
@@ -63,7 +63,7 @@ class OssAliYunConfig {
   /// [originalUrl] 图片地址
   /// [width] 图片宽度
   /// [radius] 圆角半径
-  String getUrlCorners(String originalUrl, double width, double radius) {
+  String getUrlCorners(String originalUrl, double? width, double? radius) {
     var arguments = OssImageArguments().builder();
     arguments.resizeW(width);
     arguments.corners(radius);

@@ -9,21 +9,21 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 typedef RefreshInitCall = void Function(CusRefreshController controller);
 
 class RefreshSliverWidget extends StatefulWidget {
-  final Widget child;
-  final bool enableRefresh;
-  final bool enableLoad;
-  final OnRefreshCall onRefresh;
-  final OnLoadCall onLoad;
-  final Widget emptyWidget;
-  final bool isVisibilityFirstLoadWidget;
-  final Footer footer;
-  final RefreshInitCall initCall;
-  final ScrollController scrollController;
-  final OnFinishLoadCall finishLoadCall;
-  final Widget loadIndicatorWidget;
+  final Widget? child;
+  final bool? enableRefresh;
+  final bool? enableLoad;
+  final OnRefreshCall? onRefresh;
+  final OnLoadCall? onLoad;
+  final Widget? emptyWidget;
+  final bool? isVisibilityFirstLoadWidget;
+  final Footer? footer;
+  final RefreshInitCall? initCall;
+  final ScrollController? scrollController;
+  final OnFinishLoadCall? finishLoadCall;
+  final Widget? loadIndicatorWidget;
 
   const RefreshSliverWidget(
-      {Key key,
+      {Key? key,
       this.child,
       this.enableRefresh,
       this.enableLoad,
@@ -43,20 +43,20 @@ class RefreshSliverWidget extends StatefulWidget {
 }
 
 class _RefreshSliverWidgetState extends State<RefreshSliverWidget> {
-  CusRefreshController _controller;
+  CusRefreshController? _controller;
 
   @override
   void initState() {
     _controller = CusRefreshController(finishLoadCall: widget.finishLoadCall);
     if (widget.initCall != null) {
-      widget.initCall(_controller);
+      widget.initCall!(_controller!);
     }
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -71,24 +71,29 @@ class _RefreshSliverWidgetState extends State<RefreshSliverWidget> {
       controller: _controller,
       scrollController: widget.scrollController,
       emptyWidget: widget.emptyWidget,
-      firstRefreshWidget: widget.isVisibilityFirstLoadWidget ? RefreshDefaultWidget().firstRefreshWidget() : null,
+      firstRefreshWidget:
+          (widget.isVisibilityFirstLoadWidget ?? false) ? RefreshDefaultWidget().firstRefreshWidget() : null,
       slivers: <Widget>[
         SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
           return widget.child;
         }, childCount: 1))
       ],
-      onRefresh: widget.enableRefresh
+      onRefresh: (widget.enableRefresh ?? false)
           ? () async {
               await Future.delayed(Duration(milliseconds: 100), () {
-                widget.onRefresh(_controller);
+                if (widget.onRefresh != null) {
+                  widget.onRefresh!(_controller!);
+                }
               });
             }
           : null,
-      onLoad: widget.enableLoad
+      onLoad: (widget.enableLoad ?? false)
           ? () async {
               await Future.delayed(Duration(milliseconds: 100), () {
-                widget.onLoad(_controller);
+                if (widget.onLoad != null) {
+                  widget.onLoad!(_controller!);
+                }
               });
             }
           : null,

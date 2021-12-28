@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 class CusRefreshFooter extends Footer {
-  final Widget loadIndicatorWidget;
+  final Widget? loadIndicatorWidget;
 
   CusRefreshFooter({this.loadIndicatorWidget});
 
@@ -16,15 +16,15 @@ class CusRefreshFooter extends Footer {
       double loadIndicatorExtent,
       AxisDirection axisDirection,
       bool float,
-      Duration completeDuration,
+      Duration? completeDuration,
       bool enableInfiniteLoad,
       bool success,
       bool noMore) {
     return RefreshFooterController(
       loadIndicatorExtent: loadIndicatorExtent,
-      pulledExtent: pulledExtent ?? 60,
+      pulledExtent: pulledExtent,
       noMore: noMore,
-      enableInfiniteLoad: enableInfiniteLoad ?? true,
+      enableInfiniteLoad: enableInfiniteLoad,
       mode: loadState,
       loadTriggerPullDistance: loadTriggerPullDistance,
       loadIndicatorWidget: loadIndicatorWidget,

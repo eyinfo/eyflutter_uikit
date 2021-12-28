@@ -20,10 +20,10 @@ class RefreshWidget extends StatefulWidget {
   final Widget child;
 
   /// 刷新回调
-  final OnRefreshCall onRefresh;
+  final OnRefreshCall? onRefresh;
 
   /// 加载回调
-  final OnLoadCall onLoad;
+  final OnLoadCall? onLoad;
 
   /// 启用刷新功能
   final bool enableRefresh;
@@ -32,7 +32,7 @@ class RefreshWidget extends StatefulWidget {
   final bool enableLoad;
 
   /// 空视图
-  final Widget emptyWidget;
+  final Widget? emptyWidget;
 
   /// 是否显示首次加载效果(默认显示)
   final bool isVisibilityFirstLoadWidget;
@@ -41,20 +41,20 @@ class RefreshWidget extends StatefulWidget {
   final bool enableControlFinishRefresh;
 
   /// 底部组件
-  final Footer footer;
+  final Footer? footer;
 
-  final RefreshInitCall initCall;
+  final RefreshInitCall? initCall;
 
   /// 滚动超过最大比例加载下一页数据(范围：0~1)
   final double scrollMaxRatioLoad;
 
   /// 加载指示器组件
-  final Widget loadIndicatorWidget;
+  final Widget? loadIndicatorWidget;
 
   const RefreshWidget(
-      {Key key,
+      {Key? key,
       this.listStyle = RefreshListStyle.list,
-      this.child,
+      required this.child,
       this.onRefresh,
       this.onLoad,
       this.enableRefresh = true,
@@ -75,20 +75,20 @@ class RefreshWidget extends StatefulWidget {
 class _RefreshWidgetState extends State<RefreshWidget> {
   ScrollController scrollController = ScrollController();
   bool isLoading = false;
-  CusRefreshController _refreshController;
+  CusRefreshController? _refreshController;
 
   @override
   void initState() {
     super.initState();
     if (widget.enableLoad) {
       scrollController.addListener(() {
-        if (_refreshController.isAutoTriggerLoad) {
+        if (_refreshController?.isAutoTriggerLoad ?? false) {
           var scrollPosition = scrollController.position;
           var accounted = scrollPosition.pixels / scrollPosition.maxScrollExtent;
           if (accounted >= widget.scrollMaxRatioLoad) {
             if (widget.onLoad != null && !isLoading) {
               isLoading = true;
-              widget.onLoad(_refreshController);
+              widget.onLoad!(_refreshController!);
             }
           }
         }
@@ -104,16 +104,16 @@ class _RefreshWidgetState extends State<RefreshWidget> {
         enableRefresh: widget.enableRefresh,
         enableLoad: widget.enableLoad,
         onRefresh: (controller) {
-          _refreshController.isAutoTriggerLoad = true;
+          _refreshController?.isAutoTriggerLoad = true;
           if (widget.onRefresh != null) {
-            widget.onRefresh(controller);
+            widget.onRefresh!(controller);
           }
         },
         onLoad: widget.enableLoad
             ? (controller) {
                 if (widget.onLoad != null && !isLoading) {
                   isLoading = true;
-                  widget.onLoad(controller);
+                  widget.onLoad!(controller);
                 }
               }
             : null,
@@ -123,7 +123,7 @@ class _RefreshWidgetState extends State<RefreshWidget> {
         initCall: (CusRefreshController controller) {
           _refreshController = controller;
           if (widget.initCall != null) {
-            widget.initCall(controller);
+            widget.initCall!(controller);
           }
         },
         scrollController: scrollController,
@@ -137,16 +137,16 @@ class _RefreshWidgetState extends State<RefreshWidget> {
         onInitialize: (CusRefreshController controller) {
           _refreshController = controller;
           if (widget.initCall != null) {
-            widget.initCall(controller);
+            widget.initCall!(controller);
           }
-          controller?.callRefresh();
+          controller.callRefresh();
         },
         onRefresh: widget.enableRefresh ? widget.onRefresh : null,
         onLoad: widget.enableLoad
             ? (controller) {
                 if (widget.onLoad != null && !isLoading) {
                   isLoading = true;
-                  widget.onLoad(controller);
+                  widget.onLoad!(controller);
                 }
               }
             : null,

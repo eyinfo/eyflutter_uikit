@@ -3,7 +3,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 typedef OnFinishLoadCall = void Function();
 
 class CusRefreshController extends EasyRefreshController {
-  final OnFinishLoadCall finishLoadCall;
+  final OnFinishLoadCall? finishLoadCall;
   bool isAutoTriggerLoad = true;
 
   CusRefreshController({this.finishLoadCall});
@@ -19,10 +19,10 @@ class CusRefreshController extends EasyRefreshController {
   }
 
   @override
-  void finishLoad({bool success, bool noMore}) {
+  void finishLoad({bool success = true, bool noMore = false}) {
     super.finishLoad(success: success, noMore: noMore);
     if (finishLoadCall != null) {
-      finishLoadCall();
+      finishLoadCall!();
     }
   }
 }

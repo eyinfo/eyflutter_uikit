@@ -6,15 +6,12 @@ class RefreshInitManager {
   factory RefreshInitManager() => _getInstance();
 
   static RefreshInitManager get instance => _getInstance();
-  static RefreshInitManager _instance;
+  static RefreshInitManager? _instance;
 
   RefreshInitManager._internal();
 
   static RefreshInitManager _getInstance() {
-    if (_instance == null) {
-      _instance = new RefreshInitManager._internal();
-    }
-    return _instance;
+    return _instance ??= new RefreshInitManager._internal();
   }
 
   String _refreshHeaderKey = "57d4702ae5942d66";
@@ -28,19 +25,19 @@ class RefreshInitManager {
     ConfigManager.instance.addConfig(_refreshHeaderKey, headerInitHandler);
   }
 
-  RefreshHeaderHandler headerHandler() {
+  RefreshHeaderHandler? headerHandler() {
     var config = ConfigManager.instance.getConfig(_refreshHeaderKey);
     if (config is! RefreshHeaderHandler) {
       return null;
     }
-    return config as RefreshHeaderHandler;
+    return config;
   }
 
-  RefreshLoadHandler loadHandler() {
+  RefreshLoadHandler? loadHandler() {
     var config = ConfigManager.instance.getConfig(_refreshHeaderKey);
     if (config is! RefreshLoadHandler) {
       return null;
     }
-    return config as RefreshLoadHandler;
+    return config;
   }
 }

@@ -7,15 +7,12 @@ class OssImageConfig {
   factory OssImageConfig() => _getInstance();
 
   static OssImageConfig get instance => _getInstance();
-  static OssImageConfig _instance;
+  static OssImageConfig? _instance;
 
   OssImageConfig._internal();
 
   static OssImageConfig _getInstance() {
-    if (_instance == null) {
-      _instance = new OssImageConfig._internal();
-    }
-    return _instance;
+    return _instance ??= new OssImageConfig._internal();
   }
 
   /// 获取图片链接
@@ -40,7 +37,7 @@ class OssImageConfig {
   /// [radius] 当argumentType == ImageArgumentType.circle时指内切圆半径;
   /// 当argumentType==ImageArgumentType.corners时指圆角半径
   String getImageUrl(String originalUrl, ImageArgumentType argumentType,
-      {OssType ossType = OssType.aliYun, double width, double height, double radius}) {
+      {OssType ossType = OssType.aliYun, double? width, double? height, double? radius}) {
     if (ossType == OssType.aliYun) {
       var aliYunConfig = OssAliYunConfig();
       if (argumentType == ImageArgumentType.exif) {

@@ -5,55 +5,55 @@ typedef SettingBarItemClick = void Function(String tag, dynamic extra);
 
 class SettingBarItem {
   /// 栏目图标
-  final Widget icon;
+  final Widget? icon;
 
   /// 栏目文本
-  final String text;
+  final String? text;
 
   /// 栏目二级文本
-  final String secondary;
+  final String? secondary;
 
   /// 标注文本(栏目右侧显示)
-  final String mark;
+  final String? mark;
 
   /// 标注图标(栏目右侧显示)
-  final Icon markIcon;
+  final Icon? markIcon;
 
   /// 右边图标(markIcon左侧控件)
-  final Widget markWidget;
+  final Widget? markWidget;
 
   /// 栏目文本颜色
-  final Color textColor;
+  final Color? textColor;
 
   /// 文本大小
-  final double textSize;
+  final double? textSize;
 
   /// 文本加粗
-  final bool textBold;
+  final bool? textBold;
 
   /// 栏目二级文本颜色
-  final Color secondaryColor;
+  final Color? secondaryColor;
 
   /// 栏目二级文本大小
-  final double secondarySize;
+  final double? secondarySize;
 
   /// 栏目二级文本加粗
-  final bool secondaryBold;
+  final bool? secondaryBold;
 
   /// 栏目二级文本对齐
   final Alignment secondaryAlignment;
 
   /// 栏目标注文本颜色
-  final Color markColor;
+  final Color? markColor;
 
   /// 栏目标注文本大小
-  final double markSize;
+  final double? markSize;
 
   /// 栏目标注文本加粗
-  final bool markBold;
+  final bool? markBold;
 
   /// 栏目标识
-  final String tag;
+  final String? tag;
 
   /// 扩展数据
   final dynamic extra;
@@ -81,7 +81,7 @@ class SettingBarItem {
 
 class SettingBar extends StatefulWidget {
   /// 配置项集合
-  final List<SettingBarItem> items;
+  final List<SettingBarItem>? items;
 
   /// 栏目内边距
   final EdgeInsetsGeometry itemPadding;
@@ -90,49 +90,49 @@ class SettingBar extends StatefulWidget {
   final EdgeInsetsGeometry iconMargin;
 
   /// 栏目文本内边距
-  final EdgeInsetsGeometry textPadding;
+  final EdgeInsetsGeometry? textPadding;
 
   /// 栏目二级文本内边距
   final EdgeInsetsGeometry secondaryPadding;
 
   /// 栏目标注文本内边距
-  final EdgeInsetsGeometry markPadding;
+  final EdgeInsetsGeometry? markPadding;
 
   /// 栏目标注图标外边距
-  final EdgeInsetsGeometry markIconMargin;
+  final EdgeInsetsGeometry? markIconMargin;
 
   /// 栏目文本颜色
-  final Color textColor;
+  final Color? textColor;
 
   /// 栏目文本大小
-  final double textSize;
+  final double? textSize;
 
   /// 栏目文本加粗
-  final bool textBold;
+  final bool? textBold;
 
   /// 栏目二级文本颜色
-  final Color secondaryColor;
+  final Color? secondaryColor;
 
   /// 栏目二级文本大小
-  final double secondarySize;
+  final double? secondarySize;
 
   /// 栏目二级文本加粗
-  final bool secondaryBold;
+  final bool? secondaryBold;
 
   /// 栏目标注文本颜色
-  final Color markColor;
+  final Color? markColor;
 
   /// 栏目标注文本大小
-  final double markSize;
+  final double? markSize;
 
   /// 栏目标注文本加粗
-  final bool markBold;
+  final bool? markBold;
 
   /// [SettingBar]组件背景颜色
   final Color backgroundColor;
 
   /// [SettingBar]外边距
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
 
   /// [SettingBar]圆角半径(默认8.0)
   final double radius;
@@ -144,7 +144,7 @@ class SettingBar extends StatefulWidget {
   final double borderWidth;
 
   /// 栏目事件回调
-  final SettingBarItemClick itemClick;
+  final SettingBarItemClick? itemClick;
 
   /// 是否显示分割线(默认显示)
   final bool isVisibilityDivider;
@@ -159,7 +159,7 @@ class SettingBar extends StatefulWidget {
   final EdgeInsetsGeometry dividerPadding;
 
   const SettingBar(
-      {Key key,
+      {Key? key,
       this.items,
       this.itemPadding = const EdgeInsets.only(left: 15, right: 8, top: 10, bottom: 10),
       this.iconMargin = const EdgeInsets.only(right: 8),
@@ -198,9 +198,9 @@ class _SettingBarState extends State<SettingBar> {
     return Container(
       margin: widget.margin ?? EdgeInsets.zero,
       decoration: BoxDecoration(
-          color: widget.backgroundColor ?? Colors.white,
-          borderRadius: BorderRadius.circular(widget.radius ?? 8),
-          border: new Border.all(color: widget.borderColor ?? Color(0xffe5e5e5), width: widget.borderWidth ?? 0.8)),
+          color: widget.backgroundColor,
+          borderRadius: BorderRadius.circular(widget.radius),
+          border: new Border.all(color: widget.borderColor, width: widget.borderWidth)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: buildSettingItems(),
@@ -216,10 +216,10 @@ class _SettingBarState extends State<SettingBar> {
       lst.add(buildItem(element));
       if (widget.isVisibilityDivider && (index + 1) < len) {
         lst.add(Padding(
-          padding: widget.dividerPadding ?? EdgeInsets.zero,
+          padding: widget.dividerPadding,
           child: Divider(
-            height: widget.dividerHeight ?? 1,
-            color: widget.dividerColor ?? Color(0xffe5e5e5),
+            height: widget.dividerHeight,
+            color: widget.dividerColor,
           ),
         ));
       }
@@ -235,7 +235,7 @@ class _SettingBarState extends State<SettingBar> {
         },
         padding: EdgeInsets.zero,
         child: Padding(
-          padding: widget.itemPadding ?? EdgeInsets.zero,
+          padding: widget.itemPadding,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: buildItemWidgets(item),
@@ -245,7 +245,7 @@ class _SettingBarState extends State<SettingBar> {
 
   void onItemClick(SettingBarItem item) {
     if (widget.itemClick != null) {
-      widget.itemClick(item.tag, item.extra);
+      widget.itemClick!(item.tag ?? "", item.extra);
     }
   }
 
@@ -253,7 +253,7 @@ class _SettingBarState extends State<SettingBar> {
     List<Widget> lst = [];
     if (item.icon != null) {
       lst.add(Container(
-        margin: widget.iconMargin ?? EdgeInsets.zero,
+        margin: widget.iconMargin,
         child: item.icon,
       ));
     }
@@ -263,7 +263,7 @@ class _SettingBarState extends State<SettingBar> {
         child: Padding(
           padding: widget.textPadding ?? EdgeInsets.zero,
           child: Text(
-            item.text,
+            item.text ?? "",
             style: TextStyle(
                 color: (item.textColor ?? widget.textColor) ?? Color(0xff222222),
                 fontSize: (item.textSize ?? widget.textSize) ?? 14,
@@ -274,9 +274,9 @@ class _SettingBarState extends State<SettingBar> {
     }
     lst.add(Expanded(
         child: Align(
-      alignment: item.secondaryAlignment ?? Alignment.centerLeft,
+      alignment: item.secondaryAlignment,
       child: Padding(
-        padding: widget.secondaryPadding ?? EdgeInsets.zero,
+        padding: widget.secondaryPadding,
         child: Text(
           item.secondary ?? "",
           style: TextStyle(
@@ -293,7 +293,7 @@ class _SettingBarState extends State<SettingBar> {
         child: Padding(
           padding: widget.markPadding ?? EdgeInsets.zero,
           child: Text(
-            item.mark,
+            item.mark ?? "",
             style: TextStyle(
                 color: (item.markColor ?? widget.markColor) ?? Color(0xffA7A7A7),
                 fontSize: (item.markSize ?? widget.markSize) ?? 12,

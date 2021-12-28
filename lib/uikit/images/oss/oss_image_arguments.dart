@@ -1,3 +1,4 @@
+import 'package:eyflutter_core/eyflutter_core.dart';
 import 'package:eyflutter_uikit/uikit/images/enums/image_format.dart';
 
 class OssImageArguments {
@@ -19,26 +20,26 @@ class OssImageArguments {
   }
 
   /// 图片按宽等比缩放
-  OssImageArguments resizeW(double width) {
-    _buffer..write("/resize,w_${width.toInt()},m_lfit,limit_0");
+  OssImageArguments resizeW(double? width) {
+    _buffer..write("/resize,w_${width.toNumDouble},m_lfit,limit_0");
     return this;
   }
 
   /// 图片按高度等比缩放
-  OssImageArguments resizeH(double height) {
-    _buffer..write("/resize,h_${height.toInt()},m_lfit,limit_0");
+  OssImageArguments resizeH(double? height) {
+    _buffer..write("/resize,h_${height.toNumDouble},m_lfit,limit_0");
     return this;
   }
 
   /// 圆角
-  OssImageArguments corners(double radius) {
-    _buffer..write("/rounded-corners,r_${radius.toInt()}");
+  OssImageArguments corners(double? radius) {
+    _buffer..write("/rounded-corners,r_${radius.toNumDouble}");
     return this;
   }
 
   /// 内切圆
-  OssImageArguments circle(double radius) {
-    _buffer..write("/circle,r_${radius.toInt()}");
+  OssImageArguments circle(double? radius) {
+    _buffer..write("/circle,r_${radius.toNumDouble}");
     return this;
   }
 

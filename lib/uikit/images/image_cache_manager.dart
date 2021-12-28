@@ -10,7 +10,7 @@ class ImageCacheManager extends CacheManager {
   factory ImageCacheManager() => _getInstance();
 
   static ImageCacheManager get instance => _getInstance();
-  static ImageCacheManager _instance;
+  static ImageCacheManager? _instance;
 
   ImageCacheManager._internal()
       : super(Config(_key,
@@ -20,31 +20,28 @@ class ImageCacheManager extends CacheManager {
             fileService: _EsoHttpFileService()));
 
   static ImageCacheManager _getInstance() {
-    if (_instance == null) {
-      _instance = new ImageCacheManager._internal();
-    }
-    return _instance;
+    return _instance ??= new ImageCacheManager._internal();
   }
 }
 
 class _EsoHttpFileService extends FileService {
-  HttpClient _httpClient;
+  HttpClient? _httpClient;
 
-  _EsoHttpFileService({HttpClient httpClient}) {
+  _EsoHttpFileService({HttpClient? httpClient}) {
     _httpClient = httpClient ?? HttpClient();
-    _httpClient.badCertificateCallback = (cert, host, port) => true;
+    _httpClient?.badCertificateCallback = (cert, host, port) => true;
   }
 
   @override
-  Future<FileServiceResponse> get(String url, {Map<String, String> headers = const {}}) async {
+  Future<FileServiceResponse> get(String url, {Map<String, String>? headers}) async {
     final Uri resolved = Uri.base.resolve(url);
-    final HttpClientRequest req = await _httpClient.getUrl(resolved);
+    final HttpClientRequest? req = await _httpClient?.getUrl(resolved);
     headers?.forEach((key, value) {
-      req.headers.add(key, value);
+      req?.headers.add(key, value);
     });
-    final HttpClientResponse httpResponse = await req.close();
+    final HttpClientResponse? httpResponse = await req?.close();
     final http.StreamedResponse _response = http.StreamedResponse(
-      httpResponse.timeout(Duration(seconds: 60)),
+      httpResponse!.timeout(Duration(seconds: 60)),
       httpResponse.statusCode,
       contentLength: httpResponse.contentLength,
       reasonPhrase: httpResponse.reasonPhrase,

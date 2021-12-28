@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DialogModa {
-  void showWidget(
-      {@required BuildContext context,
-      @required Widget widget,
-      String title = "",
-      double height = 300}) {
+  void showWidget({required BuildContext context, required Widget widget, String title = "", double height = 300}) {
     Widget buildContent() {
       return Stack(
         children: [
@@ -22,17 +18,14 @@ class DialogModa {
             ),
             child: Text(
               title,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
             ),
           ),
           Positioned(
             top: 0,
             right: 0,
             child: InkWell(
-              child: SizedBox(width: 40,height: 40,child: Icon(Icons.clear)),
+              child: SizedBox(width: 40, height: 40, child: Icon(Icons.clear)),
               onTap: () {
                 Navigator.pop(context);
               },

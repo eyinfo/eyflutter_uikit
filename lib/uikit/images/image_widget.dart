@@ -51,43 +51,43 @@ class ImageWidget extends StatefulWidget {
   final String urlOrAlias;
 
   /// 图片宽
-  final double width;
+  final double? width;
 
   /// 图片高
-  final double height;
+  final double? height;
 
   ///图片填充类型
-  final BoxFit fit;
+  final BoxFit? fit;
 
   /// 圆角大小
-  final BorderRadius borderRadius;
+  final BorderRadius? borderRadius;
 
   /// 背影颜色
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// 占位图(flutter assets图片)
-  final String placeholder;
+  final String? placeholder;
 
   /// 占位图图片别名
   /// flutter项目图片：图片名称(xxx.png)
   /// native项目图片：图片别名(share_logo_qq.png->shareLogoQq,设置shareLogoQq)
-  final String placeholderAlias;
+  final String? placeholderAlias;
 
   /// 当为项目本身工程下图时以相对路径提供,避免部分图片转换Uint8List失败问题
   final bool isProjectImage;
 
   /// 扩展数据,在buildUrlCall回调参数中返回
-  final ImageExtensionData extensionData;
+  final ImageExtensionData? extensionData;
 
   /// 构建url回调函数与urlOrAlias互斥
-  final OnBuildImageUrlCall buildUrlCall;
+  final OnBuildImageUrlCall? buildUrlCall;
 
   /// 图片控件构建结束回调
-  final OnBuildFinishedCall buildFinishedCall;
+  final OnBuildFinishedCall? buildFinishedCall;
 
   const ImageWidget(
-      {Key key,
-      @required this.urlOrAlias,
+      {Key? key,
+      required this.urlOrAlias,
       this.backgroundColor,
       this.width,
       this.height,
@@ -108,13 +108,13 @@ class ImageWidget extends StatefulWidget {
 class _ImageLoadProvider {
   _ImageLoadProvider._();
 
-  static Widget loadAssetImage(String image, BorderRadius borderRadius, BoxFit fit, double width, double height) {
+  static Widget loadAssetImage(String image, BorderRadius? borderRadius, BoxFit fit, double width, double height) {
     if (borderRadius != null) {
       return ClipRRect(
         borderRadius: borderRadius,
         child: Image.asset(
           image,
-          fit: fit ?? BoxFit.cover,
+          fit: fit,
           width: width,
           height: height,
         ),
@@ -122,7 +122,7 @@ class _ImageLoadProvider {
     } else {
       return Image.asset(
         image,
-        fit: fit ?? BoxFit.cover,
+        fit: fit,
         width: width,
         height: height,
       );
@@ -139,7 +139,7 @@ class _ImageLoadProvider {
         borderRadius: borderRadius,
         image: DecorationImage(
           image: NativeImageProvider(imageName: imageName, suffix: suffix, isByte: Platform.isAndroid ? false : true),
-          fit: fit ?? BoxFit.cover,
+          fit: fit,
         ),
       ), // 通过 container 实现圆角
     );
@@ -155,14 +155,14 @@ class _ImageLoadProvider {
         borderRadius: borderRadius,
         image: DecorationImage(
           image: Mp4ImageProvider(imageName: imageName, suffix: suffix),
-          fit: fit ?? BoxFit.cover,
+          fit: fit,
         ),
       ), // 通过 container 实现圆角
     );
   }
 
-  static Widget loadImage(String image, double width, double height, BoxFit fit, BorderRadius borderRadius,
-      Color backgroundColor, OnImageWidgetConfig imageConfig) {
+  static Widget loadImage(String image, double? width, double? height, BoxFit fit, BorderRadius? borderRadius,
+      Color backgroundColor, OnImageWidgetConfig? imageConfig) {
     if (borderRadius == null) {
       var cacheKey = image.generateMd5();
       return CachedNetworkImage(
@@ -173,9 +173,9 @@ class _ImageLoadProvider {
         cacheManager: ImageCacheManager.instance,
         placeholder: (BuildContext context, String url) {
           double thumbnailWidth = ((width == null || width < 80) ? 80 : (width / 5.0));
-          double thumbnailHeight = ((height == null || height < 80) ? null : (height / 5.0));
+          double thumbnailHeight = (((height ?? 0) < 80) ? 0 : ((height ?? 0) / 5.0));
           return Image.asset(
-            imageConfig.onDefaultImage(),
+            imageConfig?.onDefaultImage() ?? "",
             width: thumbnailWidth,
             height: thumbnailHeight,
           );
@@ -190,7 +190,7 @@ class _ImageLoadProvider {
           borderRadius: borderRadius,
           image: DecorationImage(
             image: CachedImageProvider.imageProvider(url: image),
-            fit: fit ?? BoxFit.cover,
+            fit: fit,
           ),
         ), // 通过 container 实现圆角
       );
@@ -198,44 +198,45 @@ class _ImageLoadProvider {
   }
 
   static Widget loadLocalImage(String imageAlias, double width, double height, BoxFit fit, BorderRadius borderRadius,
-      Color backgroundColor, bool isProjectImage, OnImageWidgetConfig imageConfig) {
+      Color backgroundColor, bool isProjectImage, OnImageWidgetConfig? imageConfig) {
     var imageFactory = ConfigManager.instance.getConfig(ImageKey.imageListKey);
     if (imageFactory is! ImageListFactory) {
       return loadAssetImage(imageAlias, borderRadius, fit, width, height);
     }
-    ImageListFactory imageListFactory = (imageFactory as ImageListFactory);
+    ImageListFactory imageListFactory = imageFactory;
     String alias = imageAlias.withoutExtension;
-    ImageResponse response = imageListFactory.getFlutterImageResponse(alias);
+    ImageResponse? response = imageListFactory.getFlutterImageResponse(alias);
     if (response == null) {
       response = imageListFactory.getNativeImageResponse(alias);
       if (response == null) {
-        return loadAssetImage(imageConfig.onDefaultImage(), borderRadius, fit, width, height);
+        return loadAssetImage(imageConfig?.onDefaultImage() ?? "", borderRadius, fit, width, height);
       }
-      return nativeImage(response.result, response.suffix, width, height, backgroundColor, borderRadius, fit);
+      return nativeImage(
+          response.result ?? "", response.suffix ?? "", width, height, backgroundColor, borderRadius, fit);
     } else {
       if (isProjectImage) {
-        return loadAssetImage(response.relative, borderRadius, fit, width, height);
+        return loadAssetImage(response.relative ?? "", borderRadius, fit, width, height);
       } else {
-        return loadAssetImage(response.result, borderRadius, fit, width, height);
+        return loadAssetImage(response.result ?? "", borderRadius, fit, width, height);
       }
     }
   }
 }
 
 class _ImageWidgetState extends State<ImageWidget> with ImageController {
-  String _urlOrAlias;
-  static OnImageWidgetConfig imageConfig;
+  String? _urlOrAlias;
+  static OnImageWidgetConfig? imageConfig;
 
   @override
   void initState() {
     super.initState();
     if (widget.buildFinishedCall != null) {
-      widget.buildFinishedCall(this);
+      widget.buildFinishedCall!(this);
     }
     if (widget.buildUrlCall == null) {
       _urlOrAlias = widget.urlOrAlias;
     } else {
-      _urlOrAlias = widget.buildUrlCall(widget.extensionData);
+      _urlOrAlias = widget.buildUrlCall!(widget.extensionData ?? ImageExtensionData());
     }
   }
 
@@ -258,34 +259,53 @@ class _ImageWidgetState extends State<ImageWidget> with ImageController {
       _urlOrAlias = widget.urlOrAlias;
     }
     try {
-      if (_hasProtocol(_urlOrAlias)) {
-        if (_hasMp4(_urlOrAlias)) {
+      if (_hasProtocol(_urlOrAlias ?? "")) {
+        if (_hasMp4(_urlOrAlias ?? "")) {
           return _ImageLoadProvider.mp4Image(
-              _urlOrAlias, "mp4", widget.width, widget.height, widget.backgroundColor, widget.borderRadius, widget.fit);
+              _urlOrAlias ?? "",
+              "mp4",
+              widget.width ?? 0,
+              widget.height ?? 0,
+              widget.backgroundColor ?? Colors.transparent,
+              widget.borderRadius ?? BorderRadius.zero,
+              widget.fit ?? BoxFit.cover);
         } else {
-          var imageConfig = getImageConfig();
-          return _ImageLoadProvider.loadImage(_urlOrAlias, widget.width, widget.height, widget.fit, widget.borderRadius,
-              widget.backgroundColor, imageConfig);
+          OnImageWidgetConfig? imageConfig = getImageConfig();
+          return _ImageLoadProvider.loadImage(
+              _urlOrAlias ?? "",
+              widget.width,
+              widget.height,
+              widget.fit ?? BoxFit.cover,
+              widget.borderRadius,
+              widget.backgroundColor ?? Colors.transparent,
+              imageConfig);
         }
       }
-      var imageConfig = getImageConfig();
-      return _ImageLoadProvider.loadLocalImage(_urlOrAlias, widget.width, widget.height, widget.fit,
-          widget.borderRadius, widget.backgroundColor, widget.isProjectImage, imageConfig);
+      OnImageWidgetConfig? imageConfig = getImageConfig();
+      return _ImageLoadProvider.loadLocalImage(
+          _urlOrAlias ?? "",
+          widget.width ?? 0,
+          widget.height ?? 0,
+          widget.fit ?? BoxFit.cover,
+          widget.borderRadius ?? BorderRadius.zero,
+          widget.backgroundColor ?? Colors.transparent,
+          widget.isProjectImage,
+          imageConfig);
     } catch (e) {
       var imageConfig = getImageConfig();
-      return _ImageLoadProvider.loadAssetImage(
-          imageConfig.onDefaultImage(), widget.borderRadius, widget.fit, widget.width, widget.height);
+      return _ImageLoadProvider.loadAssetImage(imageConfig?.onDefaultImage() ?? "", widget.borderRadius,
+          widget.fit ?? BoxFit.cover, widget.width ?? 0, widget.height ?? 0);
     }
   }
 
-  static OnImageWidgetConfig getImageConfig() {
+  static OnImageWidgetConfig? getImageConfig() {
     if (imageConfig == null) {
       var configObj = ConfigManager.instance.getConfig(ImageKey.imageConfigKey);
       if (configObj is! OnImageWidgetConfig) {
         imageConfig = _ImageDefaultConfig();
         return imageConfig;
       }
-      imageConfig = configObj as OnImageWidgetConfig;
+      imageConfig = configObj;
     }
     return imageConfig;
   }
@@ -317,46 +337,43 @@ class ImageFactory {
   factory ImageFactory() => _getInstance();
 
   static ImageFactory get instance => _getInstance();
-  static ImageFactory _instance;
+  static ImageFactory? _instance;
 
   ImageFactory._internal() {
     _imageConfig = _getImageConfig();
   }
 
   static ImageFactory _getInstance() {
-    if (_instance == null) {
-      _instance = new ImageFactory._internal();
-    }
-    return _instance;
+    return _instance ??= new ImageFactory._internal();
   }
 
-  OnImageWidgetConfig _imageConfig;
+  OnImageWidgetConfig? _imageConfig;
 
-  OnImageWidgetConfig _getImageConfig() {
+  OnImageWidgetConfig? _getImageConfig() {
     if (_imageConfig == null) {
       var configObj = ConfigManager.instance.getConfig(ImageKey.imageConfigKey);
       if (configObj is! OnImageWidgetConfig) {
         _imageConfig = _ImageDefaultConfig();
         return _imageConfig;
       }
-      _imageConfig = configObj as OnImageWidgetConfig;
+      _imageConfig = configObj;
     }
     return _imageConfig;
   }
 
   Widget localImage(
-      {@required String alias,
-      double width,
-      double height,
+      {required String alias,
+      double? width,
+      double? height,
       BoxFit fit = BoxFit.scaleDown,
-      BorderRadius borderRadius,
-      Color backgroundColor,
+      BorderRadius? borderRadius,
+      Color? backgroundColor,
       bool isProjectImage = false}) {
-    return _ImageLoadProvider.loadLocalImage(
-        alias, width, height, fit, borderRadius, backgroundColor, isProjectImage, _imageConfig);
+    return _ImageLoadProvider.loadLocalImage(alias, width ?? 0, height ?? 0, fit, borderRadius ?? BorderRadius.zero,
+        backgroundColor ?? Colors.transparent, isProjectImage, _imageConfig);
   }
 
-  Image asset({@required String alias, bool isProjectImage = false}) {
+  Image asset({required String alias, bool isProjectImage = false}) {
     return Image(
       image: AssetImageProvider.render(alias, isProjectImage: isProjectImage, imageConfig: _imageConfig),
     );

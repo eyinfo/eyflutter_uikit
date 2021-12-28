@@ -40,10 +40,10 @@ class BottomBarItem {
   Widget activeIcon;
 
   /// 选项图标文本
-  String text;
+  String? text;
 
   /// 选项标识
-  String tag;
+  String? tag;
 
   /// 扩展数据
   dynamic extra;
@@ -55,10 +55,10 @@ class BottomBarItem {
   int tabIndex;
 
   ///默认图片自定义宽高
-  SizedBox normalIconSize;
+  SizedBox? normalIconSize;
 
   ///选中图片自定义宽高
-  SizedBox selectedIconSize;
+  SizedBox? selectedIconSize;
 
   /// 默认是否隐藏text
   bool normalHiddenText;
@@ -67,8 +67,8 @@ class BottomBarItem {
   bool selectedHiddenText;
 
   BottomBarItem(
-      {this.icon,
-      this.activeIcon,
+      {required this.icon,
+      required this.activeIcon,
       this.text,
       this.tag,
       this.extra,
@@ -82,51 +82,51 @@ class BottomBarItem {
 
 class BottomConvexAction {
   /// 中间组件
-  final Widget widget;
+  final Widget? widget;
 
   /// 文本，可为空
-  final String text;
+  final String? text;
 
   /// 按钮标识
-  final String tag;
+  final String? tag;
 
   /// 扩展数据
   final dynamic extra;
 
   /// 按钮大小
   /// 只在barStyle=BottomBarStyle.middleConvex时有效
-  final double size;
+  final double? size;
 
   /// 按钮背景颜色
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   BottomConvexAction({this.widget, this.text, this.tag, this.extra, this.size, this.backgroundColor});
 }
 
 class BottomBarWidget extends StatefulWidget {
   /// 导航条样式
-  final BottomBarStyle barStyle;
+  final BottomBarStyle? barStyle;
 
   /// 默认文本颜色
-  final Color color;
+  final Color? color;
 
   /// 选中文本颜色
-  final Color fixedColor;
+  final Color? fixedColor;
 
   /// tab选项集合
   final List<BottomBarItem> items;
 
   /// BottomBar监听器
-  final BottomBarListener listener;
+  final BottomBarListener? listener;
 
   /// tab页面组件
-  final List<Widget> tabWidgets;
+  final List<Widget>? tabWidgets;
 
   /// 背景颜色
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// 内嵌按钮(仅当(barStyle=BottomBarStyle.middleFloating||barStyle=BottomBarStyle.middleConvex)且items.length%2 == 0时有效)
-  final BottomConvexAction convexAction;
+  final BottomConvexAction? convexAction;
 
   /// 导航条高度
   final double height;
@@ -152,11 +152,11 @@ class BottomBarWidget extends StatefulWidget {
   final double drawablePadding;
 
   const BottomBarWidget(
-      {Key key,
+      {Key? key,
       this.barStyle,
       this.color,
       this.fixedColor,
-      this.items,
+      required this.items,
       this.listener,
       this.tabWidgets,
       this.backgroundColor,
@@ -175,20 +175,20 @@ class BottomBarWidget extends StatefulWidget {
 }
 
 class _Style extends StyleHook {
-  final double navIconSize;
-  final double convexIconMargin;
-  final double fontSize;
+  final double? navIconSize;
+  final double? convexIconMargin;
+  final double? fontSize;
 
   _Style({this.navIconSize, this.convexIconMargin, this.fontSize});
 
   @override
-  double get activeIconSize => navIconSize;
+  double? get activeIconSize => navIconSize;
 
   @override
-  double get activeIconMargin => this.convexIconMargin;
+  double? get activeIconMargin => this.convexIconMargin;
 
   @override
-  double get iconSize => this.navIconSize;
+  double? get iconSize => this.navIconSize;
 
   @override
   TextStyle textStyle(Color color) {
@@ -199,7 +199,7 @@ class _Style extends StyleHook {
 class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarController {
   int _currentIndex = 0;
   List<BottomBarItem> actualItems = [];
-  PageController _pageController;
+  PageController? _pageController;
 
   @override
   void initState() {
@@ -212,7 +212,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
   @override
   void dispose() {
     super.dispose();
-    _pageController.dispose();
+    _pageController?.dispose();
   }
 
   @override
@@ -248,7 +248,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     return PageView(
       physics: NeverScrollableScrollPhysics(),
       controller: _pageController,
-      children: widget.tabWidgets,
+      children: widget.tabWidgets ?? [],
       onPageChanged: (index) {
         setState(() {
           _currentIndex = index;
@@ -260,7 +260,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
   IndexedStack _buildIndexedStackView() {
     return IndexedStack(
       index: _currentIndex,
-      children: widget.tabWidgets,
+      children: widget.tabWidgets ?? [],
     );
   }
 
@@ -273,7 +273,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
           initialActiveIndex: _currentIndex,
           height: widget.height,
           top: widget.top > 0 ? 0 : widget.top,
-          curveSize: widget.convexAction.size + 12,
+          curveSize: (widget.convexAction?.size ?? 0) + 12,
           backgroundColor: widget.backgroundColor,
           color: widget.color,
           activeColor: widget.fixedColor,
@@ -285,7 +285,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
             var intercept = (index == (actualItems.length / 2).doubleInt);
             if (intercept) {
               BottomBarItem barItem = actualItems[index];
-              widget.listener?.onBottomBarItemClick(-1, barItem.tag, barItem.extra);
+              widget.listener?.onBottomBarItemClick(-1, barItem.tag ?? "", barItem.extra);
             }
             return !intercept;
           },
@@ -297,7 +297,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     BottomBarItem barItem = actualItems[index];
     if (!barItem.isConvex) {
       var isIntercept =
-          await widget.listener?.onBottomBarItemClick(barItem.tabIndex, barItem.tag, barItem.extra) ?? false;
+          await widget.listener?.onBottomBarItemClick(barItem.tabIndex, barItem.tag ?? "", barItem.extra) ?? false;
       if (!isIntercept) {
         setState(() {
           _currentIndex = barItem.tabIndex;
@@ -331,9 +331,9 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     actualItems.clear();
     List<TabItem> lst = [];
     int index = 0;
-    int mIndex = (widget.items.length / 2).doubleInt;
-    widget.items?.forEach((element) {
-      if (element.icon != null && element.activeIcon != null && element.text.isNotEmptyString) {
+    int mIndex = ((widget.items.length) / 2).doubleInt;
+    widget.items.forEach((element) {
+      if (element.text.isNotEmptyString) {
         actualItems.add(BottomBarItem(
             icon: element.icon,
             activeIcon: element.activeIcon,
@@ -341,23 +341,23 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
             tag: element.tag,
             extra: element.extra,
             tabIndex: index));
-        var item = TabItem<Image>(icon: element.icon, activeIcon: element.activeIcon, title: element.text);
+        var item = TabItem<Widget>(icon: element.icon, activeIcon: element.activeIcon, title: element.text);
         lst.add(item);
         if (widget.convexAction != null && widget.items.length % 2 == 0 && (index + 1) == mIndex) {
           actualItems.add(BottomBarItem(
-              icon: widget.convexAction.widget,
-              activeIcon: widget.convexAction.widget,
-              text: widget.convexAction.text,
-              tag: widget.convexAction.tag,
-              extra: widget.convexAction.extra,
+              icon: widget.convexAction?.widget ?? Container(),
+              activeIcon: widget.convexAction?.widget ?? Container(),
+              text: widget.convexAction?.text ?? "",
+              tag: widget.convexAction?.tag ?? "",
+              extra: widget.convexAction?.extra ?? "",
               isConvex: true));
           lst.add(TabItem<Widget>(
               icon: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: widget.convexAction.backgroundColor,
+              color: widget.convexAction?.backgroundColor,
             ),
-            child: widget.convexAction.widget,
+            child: widget.convexAction?.widget,
           )));
         }
         index++;
@@ -366,7 +366,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     return lst;
   }
 
-  Widget _buildFloatButton() {
+  Widget? _buildFloatButton() {
     if (widget.convexAction == null || actualItems.length % 2 != 0) {
       return null;
     }
@@ -398,17 +398,17 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     List<Widget> lst = [];
     int index = 0;
     int mIndex = (widget.items.length / 2).doubleInt;
-    widget.items?.forEach((element) {
+    widget.items.forEach((element) {
       element.tabIndex = index;
-      if (element.icon != null && element.activeIcon != null && element.text.isNotEmptyString) {
+      if (element.text.isNotEmptyString) {
         actualItems.add(element);
         lst.add(_buildBarItemGestureDetector(index, element));
         if (widget.convexAction != null && widget.items.length % 2 == 0 && (index + 1) == mIndex) {
           lst.add(Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              widget.convexAction.widget,
-              Text(widget.convexAction.text ?? "", style: TextStyle(color: widget.color, fontSize: widget.fontSize))
+              widget.convexAction?.widget ?? Container(),
+              Text(widget.convexAction?.text ?? "", style: TextStyle(color: widget.color, fontSize: widget.fontSize))
             ],
           ));
         }
@@ -437,17 +437,17 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     BottomBarItem barItem = actualItems[index];
     if (!barItem.isConvex) {
       var isIntercept =
-          await widget.listener?.onBottomBarItemClick(barItem.tabIndex, barItem.tag, barItem.extra) ?? false;
+          await widget.listener?.onBottomBarItemClick(barItem.tabIndex, barItem.tag ?? "", barItem.extra) ?? false;
       if (!isIntercept) {
         setState(() {
           _currentIndex = barItem.tabIndex;
-          _pageController.jumpToPage(index);
+          _pageController?.jumpToPage(index);
         });
       }
     } else {
       setState(() {
         _currentIndex = barItem.tabIndex;
-        _pageController.jumpToPage(index);
+        _pageController?.jumpToPage(index);
       });
     }
   }
@@ -472,7 +472,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
 
   Widget _buildMiddleItemText(bool isselected, BottomBarItem barItem) {
     return Text(
-      barItem.text,
+      barItem.text ?? "",
       style: TextStyle(color: isselected ? widget.fixedColor : widget.color, fontWeight: FontWeight.normal),
     );
   }
@@ -483,14 +483,14 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     double topPadding = 4;
     if (isselected) {
       if (barItem.selectedIconSize != null) {
-        width = barItem.selectedIconSize.width;
-        height = barItem.selectedIconSize.height;
+        width = barItem.selectedIconSize?.width ?? 0;
+        height = barItem.selectedIconSize?.height ?? 0;
         topPadding = 0;
       }
     } else {
       if (barItem.normalIconSize != null) {
-        width = barItem.normalIconSize.width;
-        height = barItem.normalIconSize.height;
+        width = barItem.normalIconSize?.width ?? 0;
+        height = barItem.normalIconSize?.height ?? 0;
         topPadding = 0;
       }
     }
@@ -511,8 +511,8 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     actualItems.clear();
     List<BottomNavigationBarItem> lst = [];
     int index = 0;
-    widget.items?.forEach((element) {
-      if (element.icon != null && element.activeIcon != null && element.text.isNotEmptyString) {
+    widget.items.forEach((element) {
+      if (element.text.isNotEmptyString) {
         element.tabIndex = index;
         actualItems.add(element);
         lst.add(BottomNavigationBarItem(
@@ -557,7 +557,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
     BottomBarItem barItem = actualItems[index];
     if (!barItem.isConvex) {
       var isIntercept =
-          await widget.listener?.onBottomBarItemClick(barItem.tabIndex, barItem.tag, barItem.extra) ?? false;
+          await widget.listener?.onBottomBarItemClick(barItem.tabIndex, barItem.tag ?? "", barItem.extra) ?? false;
       if (!isIntercept) {
         setState(() {
           _currentIndex = barItem.tabIndex;
@@ -568,28 +568,28 @@ class _BottomBarWidgetState extends State<BottomBarWidget> with BottomBarControl
 }
 
 class _BottomFloatingActionButton extends StatelessWidget {
-  final BottomConvexAction convexAction;
-  final BottomBarListener listener;
+  final BottomConvexAction? convexAction;
+  final BottomBarListener? listener;
 
-  const _BottomFloatingActionButton({Key key, this.convexAction, this.listener}) : super(key: key);
+  const _BottomFloatingActionButton({Key? key, this.convexAction, this.listener}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(4),
       margin: EdgeInsets.only(top: 5),
-      height: convexAction.size,
-      width: convexAction.size,
+      height: convexAction?.size,
+      width: convexAction?.size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(60),
         color: Colors.white,
       ),
       child: FloatingActionButton(
         elevation: 0,
-        backgroundColor: convexAction.backgroundColor,
-        child: convexAction.widget,
+        backgroundColor: convexAction?.backgroundColor,
+        child: convexAction?.widget,
         onPressed: () {
-          listener?.onBottomBarItemClick(-1, convexAction.tag, convexAction.extra);
+          listener?.onBottomBarItemClick(-1, convexAction?.tag ?? "", convexAction?.extra);
         },
       ),
     );

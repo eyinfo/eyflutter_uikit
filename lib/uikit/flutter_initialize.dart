@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 /// flutter engine initialize
 mixin OnInitializeListener {
   /// 构建应用启动组件
-  Widget buildAppWidget(String defaultRout);
+  Widget buildAppWidget({String defaultRout = "/"});
 
   /// 应用启动回调(组件创建之前执行)
   Future<void> startSyncCall();
@@ -36,30 +36,29 @@ class FlutterInitialize {
   factory FlutterInitialize() => _getInstance();
 
   static FlutterInitialize get instance => _getInstance();
-  static FlutterInitialize _instance;
+  static FlutterInitialize? _instance;
 
   FlutterInitialize._internal();
 
   static FlutterInitialize _getInstance() {
-    _instance ??= FlutterInitialize._internal();
-    return _instance;
+    return _instance ??= FlutterInitialize._internal();
   }
 
   /// flutter engine 启动初始化
-  void start({@required OnInitializeListener listener}) async {
+  void start({required OnInitializeListener listener}) async {
     WidgetsFlutterBinding.ensureInitialized();
-    Logger.instance.builder.setLogListener(LogHandler()).setPrintLog(true);
-    await listener?.startSyncCall();
-    var appWidget = listener?.buildAppWidget(window.defaultRouteName ?? "/");
+    Logger.instance.builder?.setLogListener(LogHandler()).setPrintLog(true);
+    await listener.startSyncCall();
+    var appWidget = listener.buildAppWidget(defaultRout: window.defaultRouteName);
     CrashHandler.instance.build(appWidget,
         report: (crashInfo) {
-          listener?.crashReportCall(crashInfo);
+          listener.crashReportCall(crashInfo);
         },
-        environment: listener?.environment() ?? 0,
+        environment: listener.environment(),
         completedCall: () {
-          listener?.crashCompletedCall();
+          listener.crashCompletedCall();
         });
-    listener?.startCall();
+    listener.startCall();
     MediaUtils.instance.initialize(375);
     LangStorage.instance.loadLang();
     overlayStyle();

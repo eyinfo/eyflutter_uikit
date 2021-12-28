@@ -30,7 +30,7 @@ enum FirstLoadType {
 /// [emptyWidget] 空视图
 class RefreshListWidget extends StatefulWidget {
   RefreshListWidget(
-      {@required this.child,
+      {required this.child,
       this.onInitialize,
       this.onRefresh,
       this.onLoad,
@@ -46,26 +46,26 @@ class RefreshListWidget extends StatefulWidget {
       this.loadIndicatorWidget});
 
   final Widget child;
-  final OnInitializeCall onInitialize;
-  final OnRefreshCall onRefresh;
-  final OnLoadCall onLoad;
+  final OnInitializeCall? onInitialize;
+  final OnRefreshCall? onRefresh;
+  final OnLoadCall? onLoad;
   final bool enableControlFinishRefresh;
   final bool enableControlFinishLoad;
   final bool isAutoLoad;
   final FirstLoadType firstLoadType;
-  final Widget emptyWidget;
-  final bool isVisibilityFirstLoadWidget;
-  final Footer footer;
-  final ScrollController scrollController;
-  final OnFinishLoadCall finishLoadCall;
-  final Widget loadIndicatorWidget;
+  final Widget? emptyWidget;
+  final bool? isVisibilityFirstLoadWidget;
+  final Footer? footer;
+  final ScrollController? scrollController;
+  final OnFinishLoadCall? finishLoadCall;
+  final Widget? loadIndicatorWidget;
 
   @override
   _CSRefreshState createState() => _CSRefreshState();
 }
 
 class _CSRefreshState extends State<RefreshListWidget> {
-  CusRefreshController _controller;
+  CusRefreshController? _controller;
   bool isInitialized = false;
   bool _isFooter = true;
   bool _isLoad = false;
@@ -81,7 +81,7 @@ class _CSRefreshState extends State<RefreshListWidget> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -100,10 +100,10 @@ class _CSRefreshState extends State<RefreshListWidget> {
           : () async {
               await Future.delayed(Duration(milliseconds: 100), () {
                 if (!widget.enableControlFinishRefresh) {
-                  widget.onRefresh(_controller);
+                  widget.onRefresh!(_controller!);
                   _controller?.finishRefresh(success: true);
                 } else {
-                  widget.onRefresh(_controller);
+                  widget.onRefresh!(_controller!);
                 }
               });
             },
@@ -115,10 +115,10 @@ class _CSRefreshState extends State<RefreshListWidget> {
                     if (_isLoad) {
                       _isLoad = false;
                       if (!widget.enableControlFinishLoad) {
-                        widget.onLoad(_controller);
+                        widget.onLoad!(_controller!);
                         _controller?.finishLoad(success: true);
                       } else {
-                        widget.onLoad(_controller);
+                        widget.onLoad!(_controller!);
                       }
                       _loadingBottomControl();
                     } else {
@@ -128,14 +128,15 @@ class _CSRefreshState extends State<RefreshListWidget> {
                 }
               : null,
       firstRefresh: widget.isAutoLoad && widget.firstLoadType == FirstLoadType.overlay,
-      firstRefreshWidget: widget.isVisibilityFirstLoadWidget ? RefreshDefaultWidget().firstRefreshWidget() : null,
+      firstRefreshWidget:
+          (widget.isVisibilityFirstLoadWidget ?? false) ? RefreshDefaultWidget().firstRefreshWidget() : null,
       emptyWidget: widget.emptyWidget,
     );
     if (!isInitialized) {
       isInitialized = true;
       if (widget.onInitialize != null && widget.isAutoLoad && widget.firstLoadType == FirstLoadType.pull) {
         Future.delayed(Duration(milliseconds: 700), () {
-          widget.onInitialize(_controller);
+          widget.onInitialize!(_controller!);
         });
       }
     }

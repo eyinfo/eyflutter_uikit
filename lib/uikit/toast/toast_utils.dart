@@ -15,15 +15,12 @@ class ToastUtils {
   factory ToastUtils() => _getInstance();
 
   static ToastUtils get instance => _getInstance();
-  static ToastUtils _instance;
+  static ToastUtils? _instance;
 
   ToastUtils._internal();
 
   static ToastUtils _getInstance() {
-    if (_instance == null) {
-      _instance = new ToastUtils._internal();
-    }
-    return _instance;
+    return _instance ??= new ToastUtils._internal();
   }
 
   String _toastMethodName = "aa94dd6839b29726";

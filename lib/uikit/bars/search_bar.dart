@@ -7,7 +7,7 @@ class SearchBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
 
   /// 导航栏背景颜色
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// 搜索条下方分割线高度
   final double underlineHeight;
@@ -46,10 +46,10 @@ class SearchBar extends StatefulWidget implements PreferredSizeWidget {
   final Icon searchIcon;
 
   /// 单击事件回调
-  final SearchBarClick click;
+  final SearchBarClick? click;
 
   const SearchBar(
-      {Key key,
+      {Key? key,
       this.height = 46,
       this.backgroundColor,
       this.underlineHeight = 0,
@@ -58,8 +58,7 @@ class SearchBar extends StatefulWidget implements PreferredSizeWidget {
       this.borderWidth = 1,
       this.borderColor = const Color(0xffe5e5e5),
       this.color = const Color(0xffffffff),
-      this.margin =
-          const EdgeInsets.only(left: 20, top: 4, right: 20, bottom: 6),
+      this.margin = const EdgeInsets.only(left: 20, top: 4, right: 20, bottom: 6),
       this.borderRadius = 4,
       this.textFontSize = 14.0,
       this.textColor = const Color(0xff1A1A1A),
@@ -88,18 +87,14 @@ class _SearchBarState extends State<SearchBar> {
         child: new Container(
             decoration: new UnderlineTabIndicator(
               borderSide: BorderSide(
-                  width:
-                      widget.visibilityUnderline ? widget.underlineHeight : 0,
-                  color: widget.visibilityUnderline
-                      ? widget.underlineColor
-                      : Color(0x00000000)),
+                  width: widget.visibilityUnderline ? widget.underlineHeight : 0,
+                  color: widget.visibilityUnderline ? widget.underlineColor : Color(0x00000000)),
             ),
             height: widget.height,
             child: GestureDetector(
               child: Container(
                 decoration: BoxDecoration(
-                    border: Border.all(
-                        color: widget.borderColor, width: widget.borderWidth),
+                    border: Border.all(color: widget.borderColor, width: widget.borderWidth),
                     color: widget.color,
                     borderRadius: BorderRadius.circular(widget.borderRadius)),
                 margin: widget.margin,
@@ -132,7 +127,7 @@ class _SearchBarState extends State<SearchBar> {
               ),
               onTap: () {
                 if (widget.click != null) {
-                  widget.click();
+                  widget.click!();
                 }
               },
             )),

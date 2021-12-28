@@ -17,8 +17,7 @@ import 'package:flutter/material.dart';
 ///  -1.0 >= value >= 0.0: past stuck
 /// ```
 ///
-typedef Widget StickyHeaderWidgetBuilder(
-    BuildContext context, double stuckAmount);
+typedef Widget StickyHeaderWidgetBuilder(BuildContext context, double stuckAmount);
 
 /// Stick Header Widget
 ///
@@ -30,9 +29,9 @@ typedef Widget StickyHeaderWidgetBuilder(
 class StickyHeader extends MultiChildRenderObjectWidget {
   /// Constructs a new [StickyHeader] widget.
   StickyHeader({
-    Key key,
-    @required this.header,
-    @required this.content,
+    Key? key,
+    required this.header,
+    required this.content,
     this.overlapHeaders: false,
     this.callback,
   }) : super(
@@ -52,22 +51,21 @@ class StickyHeader extends MultiChildRenderObjectWidget {
 
   /// Optional callback with stickyness value. If you think you need this, then you might want to
   /// consider using [StickyHeaderBuilder] instead.
-  final StickyRenderHeaderCallback callback;
+  final StickyRenderHeaderCallback? callback;
 
   @override
   StickyRenderHeader createRenderObject(BuildContext context) {
     var scrollable = Scrollable.of(context);
     assert(scrollable != null);
     return new StickyRenderHeader(
-      scrollable: scrollable,
+      scrollable: scrollable!,
       callback: this.callback,
       overlapHeaders: this.overlapHeaders,
     );
   }
 
   @override
-  void updateRenderObject(
-      BuildContext context, StickyRenderHeader renderObject) {
+  void updateRenderObject(BuildContext context, StickyRenderHeader renderObject) {
     renderObject
       ..scrollable = Scrollable.of(context)
       ..callback = this.callback
@@ -85,9 +83,9 @@ class StickyHeader extends MultiChildRenderObjectWidget {
 class StickyHeaderBuilder extends StatefulWidget {
   /// Constructs a new [StickyHeaderBuilder] widget.
   const StickyHeaderBuilder({
-    Key key,
-    @required this.builder,
-    this.content,
+    Key? key,
+    required this.builder,
+    required this.content,
     this.overlapHeaders: false,
   }) : super(key: key);
 
@@ -106,7 +104,7 @@ class StickyHeaderBuilder extends StatefulWidget {
 }
 
 class _StickyHeaderBuilderState extends State<StickyHeaderBuilder> {
-  double _stuckAmount;
+  double? _stuckAmount;
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +117,7 @@ class _StickyHeaderBuilderState extends State<StickyHeaderBuilder> {
       callback: (double stuckAmount) {
         if (_stuckAmount != stuckAmount) {
           _stuckAmount = stuckAmount;
-          WidgetsBinding.instance.endOfFrame.then((_) {
+          WidgetsBinding.instance?.endOfFrame.then((_) {
             if (mounted) {
               setState(() {});
             }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 class CusRefreshHeader extends Header {
+  Duration? completeDuration;
+
   /// [height] header容器高度
   /// [triggerDistance] 触发刷新最小距离
   /// [completeDuration] 完成后延时时间
@@ -19,7 +21,9 @@ class CusRefreshHeader extends Header {
           completeDuration: completeDuration,
           enableInfiniteRefresh: false,
           enableHapticFeedback: enableHapticFeedback,
-        );
+        ) {
+    this.completeDuration = completeDuration;
+  }
 
   @override
   Widget contentBuilder(
@@ -30,7 +34,7 @@ class CusRefreshHeader extends Header {
       double refreshIndicatorExtent,
       AxisDirection axisDirection,
       bool float,
-      Duration completeDuration,
+      Duration? completeDuration,
       bool enableInfiniteRefresh,
       bool success,
       bool noMore) {
@@ -38,7 +42,7 @@ class CusRefreshHeader extends Header {
         mode: refreshState,
         pulledExtent: pulledExtent,
         refreshTriggerPullDistance: refreshTriggerPullDistance,
-        completeDuration: completeDuration,
+        completeDuration: this.completeDuration!,
         success: success,
         noMore: noMore,
         height: extent,

@@ -17,7 +17,7 @@ class DialogPanel {
       barrierDismissible = true,
       double dx = 0,
       double dy = 0,
-      OnDialogDismissCall dismissCall}) {
+      OnDialogDismissCall? dismissCall}) {
     return YYDialog().build(context)
       ..gravity = gravity ?? Gravity.bottom
       ..gravityAnimationEnable = true
@@ -26,7 +26,7 @@ class DialogPanel {
       ..margin = margin
       ..barrierColor = Colors.black.withOpacity(.3)
       ..barrierDismissible = barrierDismissible ?? true
-      ..dismissCallBack = dismissCall
+      ..dismissCallBack = dismissCall!
       ..show();
   }
 
@@ -39,7 +39,7 @@ class DialogPanel {
       double dx = 0,
       double dy = 0,
       margin = const EdgeInsets.all(0),
-      OnDialogDismissCall dismissCall}) {
+      OnDialogDismissCall? dismissCall}) {
     return showDialogPanel(context,
         gravity: gravity ?? Gravity.center,
         container: container,

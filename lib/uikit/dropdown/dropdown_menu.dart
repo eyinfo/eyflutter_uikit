@@ -11,8 +11,8 @@ class DropdownMenuBuilder {
   final double dropDownHeight;
 
   DropdownMenuBuilder({
-    @required this.dropDownWidget,
-    @required this.dropDownHeight,
+    required this.dropDownWidget,
+    required this.dropDownHeight,
   });
 }
 
@@ -26,17 +26,17 @@ class DropDownMenu extends StatefulWidget {
   final Color maskColor;
 
   /// Called when dropdown menu start showing or hiding.
-  final DropdownMenuChange dropdownMenuChanging;
+  final DropdownMenuChange? dropdownMenuChanging;
 
   /// Called when dropdown menu has been shown or hidden.
-  final DropdownMenuChange dropdownMenuChanged;
+  final DropdownMenuChange? dropdownMenuChanged;
 
   /// Creates a dropdown menu widget.
   /// The widget must be inside the Stack because the widget is a Positioned.
   const DropDownMenu({
-    Key key,
-    @required this.controller,
-    @required this.menus,
+    Key? key,
+    required this.controller,
+    required this.menus,
     this.animationMilliseconds = 500,
     this.maskColor = const Color.fromRGBO(0, 0, 0, 0.5),
     this.dropdownMenuChanging,
@@ -47,42 +47,33 @@ class DropDownMenu extends StatefulWidget {
   _DropDownMenuState createState() => _DropDownMenuState();
 }
 
-class _DropDownMenuState extends State<DropDownMenu>
-    with SingleTickerProviderStateMixin {
+class _DropDownMenuState extends State<DropDownMenu> with SingleTickerProviderStateMixin {
   bool _isShowDropDownItemWidget = false;
   bool _isShowMask = false;
   bool _isControllerDisposed = false;
-  Animation<double> _animation;
-  AnimationController _controller;
+  Animation<double>? _animation;
+  AnimationController? _controller;
 
-  double _maskColorOpacity;
+  double? _maskColorOpacity;
 
-  double _dropDownHeight;
+  double? _dropDownHeight;
 
-  int _currentMenuIndex;
+  int? _currentMenuIndex;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     widget.controller.addListener(_onController);
-    _controller = new AnimationController(
-        duration: Duration(milliseconds: widget.animationMilliseconds),
-        vsync: this);
+    _controller = new AnimationController(duration: Duration(milliseconds: widget.animationMilliseconds), vsync: this);
   }
 
   _onController() {
-//    print('_DropDownMenuState._onController ${widget.controller.menuIndex}');
-
     _showDropDownItemWidget();
   }
 
   @override
   Widget build(BuildContext context) {
-//    print('_DropDownMenuState.build');
-    _controller.duration =
-        Duration(milliseconds: widget.animationMilliseconds);
+    _controller?.duration = Duration(milliseconds: widget.animationMilliseconds);
     return _buildDropDownWidget();
   }
 
@@ -97,69 +88,55 @@ class _DropDownMenuState extends State<DropDownMenu>
 
   _showDropDownItemWidget() {
     _currentMenuIndex = widget.controller.menuIndex;
-    if (_currentMenuIndex >= widget.menus.length) {
+    if ((_currentMenuIndex ?? 0) >= widget.menus.length) {
       return;
     }
-
     _isShowDropDownItemWidget = !_isShowDropDownItemWidget;
     if (widget.dropdownMenuChanging != null) {
-      widget.dropdownMenuChanging(
-          _isShowDropDownItemWidget, _currentMenuIndex);
+      widget.dropdownMenuChanging!(_isShowDropDownItemWidget, _currentMenuIndex ?? 0);
     }
     if (!_isShowMask) {
       _isShowMask = true;
     }
-
-    _dropDownHeight = widget.menus[_currentMenuIndex].dropDownHeight;
-
+    _dropDownHeight = widget.menus[_currentMenuIndex ?? 0].dropDownHeight;
     _animation?.removeListener(_animationListener);
     _animation?.removeStatusListener(_animationStatusListener);
-    _animation =
-        new Tween(begin: 0.0, end: _dropDownHeight).animate(_controller)
-          ..addListener(_animationListener)
-          ..addStatusListener(_animationStatusListener);
-
+    _animation = new Tween(begin: 0.0, end: _dropDownHeight).animate(_controller!)
+      ..addListener(_animationListener)
+      ..addStatusListener(_animationStatusListener);
     if (_isControllerDisposed) return;
-
-//    print('${widget.controller.isShow}');
-
     if (widget.controller.isShow) {
-      _controller.forward();
+      _controller?.forward();
     } else if (widget.controller.isShowHideAnimation) {
-      _controller.reverse();
+      _controller?.reverse();
     } else {
-      _controller.value = 0;
+      _controller?.value = 0;
     }
   }
 
   void _animationStatusListener(AnimationStatus status) {
     switch (status) {
       case AnimationStatus.dismissed:
-//        print('dismissed');
         _isShowMask = false;
         if (widget.dropdownMenuChanged != null) {
-          widget.dropdownMenuChanged(false, _currentMenuIndex);
+          widget.dropdownMenuChanged!(false, _currentMenuIndex ?? 0);
         }
         break;
       case AnimationStatus.forward:
-        // TODO: Handle this case.
         break;
       case AnimationStatus.reverse:
-        // TODO: Handle this case.
         break;
       case AnimationStatus.completed:
-//        print('completed');
         if (widget.dropdownMenuChanged != null) {
-          widget.dropdownMenuChanged(true, _currentMenuIndex);
+          widget.dropdownMenuChanged!(true, _currentMenuIndex ?? 0);
         }
         break;
     }
   }
 
   void _animationListener() {
-    var heightScale = _animation.value / _dropDownHeight;
+    var heightScale = (_animation?.value ?? 0) / (_dropDownHeight ?? 1);
     _maskColorOpacity = widget.maskColor.opacity * heightScale;
-//    print('$_maskColorOpacity');
     //这行如果不写，没有动画效果
     setState(() {});
   }
@@ -173,8 +150,7 @@ class _DropDownMenuState extends State<DropDownMenu>
         child: Container(
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
-          color: widget.maskColor.withOpacity(_maskColorOpacity),
-//          color: widget.maskColor,
+          color: widget.maskColor.withOpacity(_maskColorOpacity ?? 1),
         ),
       );
     } else {
@@ -200,7 +176,7 @@ class _DropDownMenuState extends State<DropDownMenu>
             Container(
               color: Colors.white,
               width: double.infinity,
-              height: _animation == null ? 0 : _animation.value,
+              height: _animation == null ? 0 : _animation?.value,
               child: widget.menus[menuIndex].dropDownWidget,
             ),
             _mask(),

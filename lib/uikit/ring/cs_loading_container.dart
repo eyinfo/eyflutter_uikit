@@ -4,14 +4,14 @@ import 'package:eyflutter_core/kit/utils/string/string_extension.dart';
 import 'package:flutter/material.dart';
 
 class CsLoadingContainer extends StatefulWidget {
-  CsLoadingContainer({Key key, this.indicator, this.text, this.animation = true, this.isShowMask = false})
+  CsLoadingContainer({Key? key, this.indicator, this.text, this.animation = true, this.isShowMask = false})
       : super(key: key);
 
   /// 指示器视图
-  final Widget indicator;
+  final Widget? indicator;
 
   /// 显示文本
-  final String text;
+  final String? text;
 
   /// 是否处理动画
   final bool animation;
@@ -25,8 +25,8 @@ class CsLoadingContainer extends StatefulWidget {
 
 class CsLoadingContainerState extends State<CsLoadingContainer> {
   double _opacity = 0.0;
-  Duration _animationDuration;
-  String _text;
+  Duration? _animationDuration;
+  String? _text;
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class CsLoadingContainerState extends State<CsLoadingContainer> {
     setState(() {
       _opacity = 0.0;
     });
-    Future.delayed(_animationDuration, () {
+    Future.delayed(_animationDuration!, () {
       completer.complete();
     });
   }
@@ -77,7 +77,7 @@ class CsLoadingContainerState extends State<CsLoadingContainer> {
     lst.add(_loadingBuilder());
     return AnimatedOpacity(
       opacity: _opacity,
-      duration: _animationDuration,
+      duration: _animationDuration!,
       child: Stack(
         children: lst,
       ),
@@ -122,14 +122,14 @@ class CsLoadingContainerState extends State<CsLoadingContainer> {
   List<Widget> _buildChildElements() {
     List<Widget> lst = [];
     if (widget.indicator != null) {
-      lst.add(widget.indicator);
+      lst.add(widget.indicator!);
       lst.add(SizedBox(
         width: 10,
       ));
     }
     if (_text.isNotEmptyString) {
       lst.add(Text(
-        _text,
+        _text!,
         style: TextStyle(color: Colors.white, fontSize: 14, letterSpacing: 0.82),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,

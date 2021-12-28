@@ -13,8 +13,8 @@ enum LoadingType {
 
 class IconRingIndicator extends StatefulWidget {
   IconRingIndicator({
-    Key key,
-    @required this.size,
+    Key? key,
+    required this.size,
     this.indicatorColor: const Color(0xffb5bdc8),
     this.indicatorBackgroundColor: const Color(0xffe2e5e9),
     this.loadingType,
@@ -31,17 +31,17 @@ class IconRingIndicator extends StatefulWidget {
   final Color indicatorBackgroundColor;
 
   /// 加载类型
-  final LoadingType loadingType;
+  final LoadingType? loadingType;
 
   /// 图标(指示器中间显示)
-  final Icon icon;
+  final Icon? icon;
 
   @override
   State<StatefulWidget> createState() => _IconRingIndicatorState();
 }
 
 class _IconRingIndicatorState extends State<IconRingIndicator> {
-  double _size;
+  double? _size;
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class _IconRingIndicatorState extends State<IconRingIndicator> {
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        maxWidth: _size,
+        maxWidth: _size!,
       ),
       child: _combIndicator(),
     );
@@ -72,7 +72,7 @@ class _IconRingIndicatorState extends State<IconRingIndicator> {
         ),
       );
     } else if (widget.loadingType == LoadingType.iconRing) {
-      return _buildIconRing(_size);
+      return _buildIconRing(_size!);
     } else {
       return _buildRing(18);
     }

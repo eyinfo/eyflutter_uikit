@@ -12,10 +12,10 @@ typedef TabChangeListener = void Function(int index, dynamic extra);
 
 class TabPages extends StatefulWidget {
   /// 选项
-  final List<TabWidget> tabs;
+  final List<TabWidget>? tabs;
 
   /// 选项内容页面
-  final List<Widget> pages;
+  final List<Widget>? pages;
 
   /// 选项卡高度(默认40)
   final double tabHeight;
@@ -24,13 +24,13 @@ class TabPages extends StatefulWidget {
   final Color tabBackgroundColor;
 
   /// 选择文本颜色
-  final Color selectedLabelColor;
+  final Color? selectedLabelColor;
 
   /// 未选择文本颜色
-  final Color unselectedLabelColor;
+  final Color? unselectedLabelColor;
 
   /// 指示器颜色
-  final Color indicatorColor;
+  final Color? indicatorColor;
 
   /// 指示器左右边距(可以控制指示器宽度)
   final double indicatorPadding;
@@ -39,16 +39,16 @@ class TabPages extends StatefulWidget {
   final int initialIndex;
 
   /// tab组件构建完成回调
-  final TabBuildCallback buildCallback;
+  final TabBuildCallback? buildCallback;
 
   /// 选项改变监听
-  final TabChangeListener change;
+  final TabChangeListener? change;
 
   /// tab是否允许滚动(默认true)
   final bool isScrollable;
 
   /// 文本样式
-  final TextStyle labelStyle;
+  final TextStyle? labelStyle;
 
   /// tabPage样式
   final TabPageStyle style;
@@ -63,16 +63,16 @@ class TabPages extends StatefulWidget {
   final double topViewHeight;
 
   /// 顶部视图组件
-  final Widget topWidget;
+  final Widget? topWidget;
 
   /// app bar title
   final String title;
 
   /// app bar 右边按钮
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
   const TabPages({
-    Key key,
+    Key? key,
     this.tabs,
     this.pages,
     this.tabHeight = 40,
@@ -100,45 +100,42 @@ class TabPages extends StatefulWidget {
 }
 
 class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin, OnTabChange {
-  TabController _tabController;
+  TabController? _tabController;
   ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
   int _initIndex = 0;
 
   //用于控件透明导航条操作
-  OpacityAppBarOption appBarOption;
-
-  //标题透明度(范围0~255)
-  int _titleAlpha = 0;
+  OpacityAppBarOption? appBarOption;
 
   @override
   void initState() {
     super.initState();
     if (widget.initialIndex < 0) {
       _initIndex = 0;
-    } else if (widget.initialIndex >= widget.tabs?.length ?? 1) {
+    } else if (widget.initialIndex >= (widget.tabs?.length ?? 0)) {
       _initIndex = widget.tabs?.length ?? 1 - 1;
     } else {
       _initIndex = widget.initialIndex;
     }
     _tabController = TabController(length: widget.tabs?.length ?? 0, vsync: this, initialIndex: _initIndex);
-    _tabController.addListener(() {
-      if (_currentIndex == _tabController.index) {
+    _tabController!.addListener(() {
+      if (_currentIndex == _tabController!.index) {
         return;
       }
-      _currentIndex = _tabController.index;
-      var tab = widget.tabs[_currentIndex];
+      _currentIndex = _tabController!.index;
+      var tab = widget.tabs?[_currentIndex];
       if (widget.change != null) {
-        widget.change(_currentIndex, tab.extra);
+        widget.change!(_currentIndex, tab?.extra);
       }
     });
     if (widget.buildCallback != null) {
-      widget.buildCallback(this);
+      widget.buildCallback!(this);
     } else {
       if (widget.tabs.isNotEmptyList) {
-        var tab = widget.tabs[_initIndex];
+        var tab = widget.tabs?[_initIndex];
         if (widget.change != null) {
-          widget.change(_initIndex, tab.extra);
+          widget.change!(_initIndex, tab?.extra);
         }
       }
     }
@@ -148,7 +145,7 @@ class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     super.dispose();
   }
 
@@ -181,7 +178,7 @@ class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin
                     )
                   ];
                 },
-                body: TabBarView(controller: _tabController, children: widget.pages),
+                body: TabBarView(controller: _tabController, children: widget.pages ?? []),
                 controller: _scrollController,
               ),
               OpacityAppBar(
@@ -201,7 +198,7 @@ class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin
   }
 
   void _nestedScrollListener() {
-    double total = widget.topViewHeight - appBarOption.getAppBarHeight();
+    double total = widget.topViewHeight - (appBarOption?.getAppBarHeight() ?? 0);
     if (_scrollController.offset >= total) {
       appBarOption?.updateOpacity(1.0);
     } else if (_scrollController.offset <= 0) {
@@ -227,11 +224,11 @@ class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildTabBar() {
+  TabBar _buildTabBar() {
     return TabBar(
-      isScrollable: widget.isScrollable ?? true,
+      isScrollable: widget.isScrollable,
       controller: _tabController,
-      tabs: widget.tabs,
+      tabs: widget.tabs ?? [],
       labelColor: widget.selectedLabelColor,
       unselectedLabelColor: widget.unselectedLabelColor,
       indicatorColor: widget.indicatorColor,
@@ -254,11 +251,11 @@ class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin
           ),
           Container(
             width: double.infinity,
-            height: widget.elevation ?? 0,
-            color: widget.elevationColor ?? Colors.transparent,
+            height: widget.elevation,
+            color: widget.elevationColor,
           ),
           Expanded(
-            child: TabBarView(controller: _tabController, children: widget.pages),
+            child: TabBarView(controller: _tabController, children: widget.pages ?? []),
           )
         ],
       ),
@@ -270,7 +267,7 @@ class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin
         appBar: AppBar(
           automaticallyImplyLeading: false,
           toolbarHeight: widget.tabHeight,
-          elevation: widget.elevation ?? 0,
+          elevation: widget.elevation,
           backgroundColor: Colors.white,
           actions: widget.actions ?? [],
           flexibleSpace: SafeArea(
@@ -280,26 +277,26 @@ class _TabPagesState extends State<TabPages> with SingleTickerProviderStateMixin
             ),
           ),
         ),
-        body: TabBarView(controller: _tabController, children: widget.pages));
+        body: TabBarView(controller: _tabController, children: widget.pages ?? []));
   }
 
   @override
   void tabChangeItem(int index) {
     if (index < 0) {
       index = 0;
-    } else if (index >= widget.tabs?.length ?? 1) {
+    } else if (index >= (widget.tabs?.length ?? 1)) {
       index = widget.tabs?.length ?? 1 - 1;
     }
-    _tabController.index = index;
+    _tabController?.index = index;
   }
 }
 
 class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar widget;
-  final Color color;
-  final double height;
+  final Color? color;
+  final double? height;
 
-  const _SliverTabBarDelegate(this.widget, {this.color, this.height}) : assert(widget != null);
+  const _SliverTabBarDelegate(this.widget, {this.color, this.height});
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
@@ -315,8 +312,8 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => height;
+  double get maxExtent => height ?? 0;
 
   @override
-  double get minExtent => height;
+  double get minExtent => height ?? 0;
 }

@@ -4,10 +4,10 @@ import 'package:flutter/widgets.dart';
 
 class CsRingPainter extends CustomPainter {
   CsRingPainter({
-    this.paintWidth,
-    this.progressPercent,
-    this.startAngle,
-    this.trackColor,
+    required this.paintWidth,
+    required this.progressPercent,
+    required this.startAngle,
+    required this.trackColor,
   }) : trackPaint = Paint()
           ..color = trackColor
           ..style = PaintingStyle.stroke

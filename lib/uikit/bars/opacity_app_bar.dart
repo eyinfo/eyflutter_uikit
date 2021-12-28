@@ -12,15 +12,15 @@ typedef OpacityAppBarCall(OpacityAppBarOption option);
 
 class OpacityAppBar extends StatefulWidget {
   /// app bar listener
-  final OpacityAppBarCall call;
+  final OpacityAppBarCall? call;
 
   /// 标题
-  final String title;
+  final String? title;
 
   /// app bar 右边按钮
-  final List<Widget> actions;
+  final List<Widget>? actions;
 
-  const OpacityAppBar({Key key, this.call, this.title, this.actions}) : super(key: key);
+  const OpacityAppBar({Key? key, this.call, this.title, this.actions}) : super(key: key);
 
   @override
   _OpacityAppBarState createState() => _OpacityAppBarState();
@@ -35,7 +35,7 @@ class _OpacityAppBarState extends State<OpacityAppBar> with OpacityAppBarOption 
     super.initState();
     stateHeight = MediaQueryData.fromWindow(window).padding.top;
     if (widget.call != null) {
-      widget.call(this);
+      widget.call!(this);
     }
   }
 

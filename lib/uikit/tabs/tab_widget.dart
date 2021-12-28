@@ -15,17 +15,17 @@ class TabWidget extends Tab {
   /// The text to display as the tab's label.
   ///
   /// Must not be used in combination with [child].
-  final String text;
+  final String? text;
 
   /// The widget to be used as the tab's label.
   ///
   /// Usually a [Text] widget, possibly wrapped in a [Semantics] widget.
   ///
   /// Must not be used in combination with [text].
-  final Widget child;
+  final Widget? child;
 
   /// An icon to display as the tab's label.
-  final Widget icon;
+  final Widget? icon;
 
   /// The margin added around the tab's icon.
   ///
@@ -36,12 +36,6 @@ class TabWidget extends Tab {
   /// 扩展数据
   final dynamic extra;
 
-  TabWidget(
-      {Key key, this.text, this.child, this.icon, this.iconMargin, this.extra})
-      : super(
-            key: key,
-            text: text,
-            child: child,
-            icon: icon,
-            iconMargin: iconMargin);
+  TabWidget({Key? key, this.text, this.child, this.icon, this.iconMargin = EdgeInsets.zero, this.extra})
+      : super(key: key, text: text, child: child, icon: icon, iconMargin: iconMargin);
 }

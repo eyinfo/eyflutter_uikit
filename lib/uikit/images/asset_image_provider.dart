@@ -13,21 +13,21 @@ class AssetImageProvider {
   /// [nameOrAlias] 通过名称或别名查找全路径
   /// [isProjectImage] 当为项目本身工程下图时以相对路径提供,避免部分图片转换Uint8List失败问题
   /// [imageConfig] 图片配置对象
-  static AssetImage render(String nameOrAlias, {bool isProjectImage = false, OnImageWidgetConfig imageConfig}) {
+  static AssetImage render(String nameOrAlias, {bool isProjectImage = false, OnImageWidgetConfig? imageConfig}) {
     var imageFactory = ConfigManager.instance.getConfig(ImageKey.imageListKey);
     if (imageFactory is! ImageListFactory) {
-      return AssetImage(imageConfig?.onDefaultImage());
+      return AssetImage(imageConfig?.onDefaultImage() ?? "");
     }
-    ImageListFactory imageListFactory = (imageFactory as ImageListFactory);
+    ImageListFactory imageListFactory = imageFactory;
     String alias = nameOrAlias.withoutExtension;
-    ImageResponse response = imageListFactory.getFlutterImageResponse(alias);
+    ImageResponse? response = imageListFactory.getFlutterImageResponse(alias);
     if (response == null) {
-      return AssetImage(imageConfig?.onDefaultImage());
+      return AssetImage(imageConfig?.onDefaultImage() ?? "");
     }
     if (isProjectImage) {
-      return AssetImage(response.relative);
+      return AssetImage(response.relative ?? "");
     } else {
-      return AssetImage(response.result);
+      return AssetImage(response.result ?? "");
     }
   }
 }

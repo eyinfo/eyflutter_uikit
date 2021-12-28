@@ -1,6 +1,6 @@
 class NativeImageEntry {
-  String android;
-  String ios;
+  String? android;
+  String? ios;
 
   NativeImageEntry({this.android, this.ios});
 }

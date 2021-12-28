@@ -54,8 +54,8 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   bool _isDestroy = false;
 
   //当前路由名
-  String _routeName;
-  String _routePath;
+  String? _routeName;
+  String? _routePath;
 
   //当前路由参数
   Map<String, dynamic> _arguments = {};
@@ -63,7 +63,7 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   //是否已初始化
   bool _isInitialized = false;
 
-  StreamSubscription _streamSubscription;
+  StreamSubscription? _streamSubscription;
 
   //是否注册uni links key
   String _isRegisterUniLinksKey = "ed74499bb870417e";
@@ -77,7 +77,7 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   @override
   bool get wantKeepAlive => true;
 
-  OnPageLifecycle _onPageLifecycle;
+  OnPageLifecycle? _onPageLifecycle;
 
   /// 软键盘改变监听
   /// [visibility] true:已显示软键盘;false:已关闭软键盘;
@@ -97,8 +97,8 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   void initState() {
     super.initState();
     this._isInitialized = false;
-    WidgetsBinding.instance.addObserver(this);
-    if (!(MemoryUtils.instance.getBool(_isRegisterUniLinksKey) ?? false)) {
+    WidgetsBinding.instance?.addObserver(this);
+    if (!(MemoryUtils.instance.getBool(_isRegisterUniLinksKey))) {
       //判断当前页面包括并支持uni links
       if (uniLinksSupportHashCodes.isNotEmptyList && uniLinksSupportHashCodes.contains(this.hashCode)) {
         _registerUniLinks();
@@ -119,16 +119,16 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
       case AppLifecycleState.resumed:
         if (!_isTop) {
           _isTop = true;
-          onResume(_routeName, _arguments);
-          _pageLifecycle?.onResume(_routeName, _arguments);
+          onResume(_routeName ?? "", _arguments);
+          _pageLifecycle?.onResume(_routeName ?? "", _arguments);
         }
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
         if (_isTop && isStackTopRoute()) {
           _isTop = false;
-          onPause(_routeName, _arguments);
-          _pageLifecycle?.onPause(_routeName, _arguments);
+          onPause(_routeName ?? "", _arguments);
+          _pageLifecycle?.onPause(_routeName ?? "", _arguments);
         }
         break;
       case AppLifecycleState.detached:
@@ -136,13 +136,13 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
         if (_isRootRoute()) {
           if (_isTop) {
             _isTop = false;
-            onPause(_routeName, _arguments);
-            _pageLifecycle?.onPause(_routeName, _arguments);
+            onPause(_routeName ?? "", _arguments);
+            _pageLifecycle?.onPause(_routeName ?? "", _arguments);
           }
           if (!_isDestroy) {
             _isDestroy = true;
-            onDestroy(_routeName, _arguments);
-            _pageLifecycle?.onDestroy(_routeName, _arguments);
+            onDestroy(_routeName ?? "", _arguments);
+            _pageLifecycle?.onDestroy(_routeName ?? "", _arguments);
             _unBind();
           }
         }
@@ -154,7 +154,7 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   bool isStackTopRoute() {
     var last = routeNames.last;
     var route = ModalRoute.of(context);
-    var name = _getPageRouteName(route);
+    var name = _getPageRouteName(route!);
     var routeTag = '${name}_${this.hashCode}';
     return last == routeTag;
   }
@@ -165,26 +165,26 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
       _isInitialized = true;
       var route = ModalRoute.of(context);
       //添加通知管理
-      _routePath = route?.settings?.name ?? "";
+      _routePath = route?.settings.name ?? "";
       //解析参数
-      this._routeName = _getPageRouteName(route);
-      var arguments = route?.settings?.arguments;
+      this._routeName = _getPageRouteName(route!);
+      var arguments = route.settings.arguments;
       if (arguments is RouteUriParse) {
         RouteUriParse routerUrlParse = arguments;
-        this._arguments.addAll(routerUrlParse?.queryParameters ?? {});
-      } else if ((arguments is LinkedHashMap<String, dynamic>) && this._arguments != null) {
+        this._arguments.addAll(routerUrlParse.queryParameters);
+      } else if (arguments is LinkedHashMap<String, dynamic>) {
         this._arguments.addAll(arguments);
       }
       routeNames.add('${_routeName}_${this.hashCode}');
       _isTop = true;
       _isDestroy = false;
-      onPreCreate(context, _routeName, _arguments);
-      _pageLifecycle?.onPreCreate(context, _routeName, _arguments);
+      onPreCreate(context, _routeName ?? "", _arguments);
+      _pageLifecycle?.onPreCreate(context, _routeName ?? "", _arguments);
       Future.delayed(Duration.zero, () {
-        onCreate(context, _routeName, _arguments);
-        _pageLifecycle?.onCreate(context, _routeName, _arguments);
-        onResume(_routeName, _arguments);
-        _pageLifecycle?.onResume(_routeName, _arguments);
+        onCreate(context, _routeName ?? "", _arguments);
+        _pageLifecycle?.onCreate(context, _routeName ?? "", _arguments);
+        onResume(_routeName ?? "", _arguments);
+        _pageLifecycle?.onResume(_routeName ?? "", _arguments);
         FocusScope.of(context).requestFocus(new FocusNode());
       });
     }
@@ -194,7 +194,7 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() {
         _isVisibilityKeyboard = MediaQuery.of(context).viewInsets.bottom > 0;
         onKeyboardChanged(_isVisibilityKeyboard);
@@ -206,15 +206,15 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   /// [key] 参数key
   /// [defaultValue] 参数默认值
   dynamic getArgument(String key, {dynamic defaultValue}) {
-    if (key.isEmptyString || _arguments == null || !_arguments.containsKey(key)) {
+    if (key.isEmptyString || !_arguments.containsKey(key)) {
       return null;
     }
     return _arguments.getValue(key, defaultValue);
   }
 
   String _getPageRouteName(ModalRoute route) {
-    var settings = route?.settings;
-    return settings?.name;
+    var settings = route.settings;
+    return settings.name ?? "";
   }
 
   bool _isRootRoute() {
@@ -225,8 +225,8 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   void didPush() {
     if (!_isTop) {
       _isTop = true;
-      onResume(_routeName, _arguments);
-      _pageLifecycle?.onResume(_routeName, _arguments);
+      onResume(_routeName ?? "", _arguments);
+      _pageLifecycle?.onResume(_routeName ?? "", _arguments);
     }
     super.didPush();
   }
@@ -235,8 +235,8 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   void didPushNext() {
     if (_isTop) {
       _isTop = false;
-      onPause(_routeName, _arguments);
-      _pageLifecycle?.onPause(_routeName, _arguments);
+      onPause(_routeName ?? "", _arguments);
+      _pageLifecycle?.onPause(_routeName ?? "", _arguments);
     }
     super.didPushNext();
   }
@@ -245,8 +245,8 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   void didPop() {
     if (_isTop) {
       _isTop = false;
-      onPause(_routeName, _arguments);
-      _pageLifecycle?.onPause(_routeName, _arguments);
+      onPause(_routeName ?? "", _arguments);
+      _pageLifecycle?.onPause(_routeName ?? "", _arguments);
     }
     super.didPop();
   }
@@ -255,8 +255,8 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   void didPopNext() {
     if (!_isTop) {
       _isTop = true;
-      onResume(_routeName, _arguments);
-      _pageLifecycle?.onResume(_routeName, _arguments);
+      onResume(_routeName ?? "", _arguments);
+      _pageLifecycle?.onResume(_routeName ?? "", _arguments);
     }
     super.didPopNext();
   }
@@ -265,23 +265,23 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
   void dispose() {
     if (_isTop) {
       _isTop = false;
-      onPause(_routeName, _arguments);
-      _pageLifecycle?.onPause(_routeName, _arguments);
+      onPause(_routeName ?? "", _arguments);
+      _pageLifecycle?.onPause(_routeName ?? "", _arguments);
     }
     if (!_isDestroy) {
       _isDestroy = true;
-      onDestroy(_routeName, _arguments);
-      _pageLifecycle?.onDestroy(_routeName, _arguments);
+      onDestroy(_routeName ?? "", _arguments);
+      _pageLifecycle?.onDestroy(_routeName ?? "", _arguments);
       _unBind();
     }
     _streamSubscription?.cancel();
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
 
   void _unBind() {
     //移除状态通知监听
-    CloudRouteObserver.instance.removeNotification(_routePath);
+    CloudRouteObserver.instance.removeNotification(_routePath ?? "");
     //注册状态绑定
     _isInitialized = false;
     routeNames.remove('${_routeName}_${this.hashCode}');
@@ -294,17 +294,17 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
       MemoryUtils.instance.set(_isRegisterUniLinksKey, true);
       //app未打开
       var initialLink = getInitialLink();
-      initialLink?.then((String link) {
-        if (!link.isEmptyString) {
-          _schemeHandler(link);
+      initialLink.then((String? link) {
+        if (link.isNotEmptyString) {
+          _schemeHandler(link!);
         }
       });
       //app已打开
-      _streamSubscription = linkStream?.listen((String link) {
+      _streamSubscription = linkStream.listen((String? link) {
         if (!mounted || link.isEmptyString) {
           return;
         }
-        _schemeHandler(link);
+        _schemeHandler(link!);
       }, onError: (Object error) {
         if (!mounted) {
           return;
@@ -321,14 +321,14 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
       if (config == null || config is! OnSchemeListener) {
         return;
       }
-      var schemeListener = config as OnSchemeListener;
+      var schemeListener = config;
       schemeListener.onGoScheme(link);
     } catch (e) {
       Logger.instance.error(e);
     }
   }
 
-  OnPageLifecycle get _pageLifecycle {
+  OnPageLifecycle? get _pageLifecycle {
     if (_onPageLifecycle != null) {
       return _onPageLifecycle;
     }
@@ -336,7 +336,7 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T>
     if (config == null || config is! OnPageLifecycle) {
       return null;
     }
-    _onPageLifecycle = config as OnPageLifecycle;
+    _onPageLifecycle = config;
     return _onPageLifecycle;
   }
 }

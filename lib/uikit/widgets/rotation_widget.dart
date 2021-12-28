@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class RotationWidget extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
   final bool isStartDefault;
   final int speedMilliseconds;
 
-  const RotationWidget({Key key, this.isStartDefault = true, this.speedMilliseconds = 500, this.child})
+  const RotationWidget({Key? key, this.isStartDefault = true, this.speedMilliseconds = 500, this.child})
       : super(key: key);
 
   @override
@@ -14,38 +14,36 @@ class RotationWidget extends StatefulWidget {
 
 class _RotationWidgetState extends State<RotationWidget> with TickerProviderStateMixin {
   //动画控制器
-  AnimationController controller;
+  AnimationController? controller;
 
   @override
   void initState() {
     super.initState();
     controller = new AnimationController(duration: Duration(milliseconds: widget.speedMilliseconds), vsync: this);
-    controller.addStatusListener((status) {
+    controller!.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        controller.reset();
-        controller.forward();
+        controller!.reset();
+        controller!.forward();
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.isStartDefault) controller.forward();
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      if (widget.isStartDefault) {
+        controller!.forward();
+      }
     });
   }
 
   stop() {
-    if (controller != null) {
-      controller.stop();
-    }
+    controller?.stop();
   }
 
   start() {
-    if (controller != null) {
-      controller.forward();
-    }
+    controller?.forward();
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    controller?.dispose();
     super.dispose();
   }
 
@@ -55,7 +53,7 @@ class _RotationWidgetState extends State<RotationWidget> with TickerProviderStat
         //设置动画的旋转中心
         alignment: Alignment.center,
         //动画控制器
-        turns: controller,
+        turns: controller!,
         //将要执行动画的子view
         child: widget.child,
       ),
@@ -71,13 +69,9 @@ class _RotationWidgetState extends State<RotationWidget> with TickerProviderStat
   void didUpdateWidget(covariant RotationWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isStartDefault) {
-      if (controller != null) {
-        controller.forward();
-      }
+      controller?.forward();
     } else {
-      if (controller != null) {
-        controller.stop();
-      }
+      controller?.stop();
     }
   }
 }

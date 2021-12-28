@@ -5,13 +5,13 @@ typedef OnTextButtonCall = void Function();
 
 class TextCornersButton extends StatefulWidget {
   /// 文本
-  final String text;
+  final String? text;
 
   /// 文本颜色
   final Color textColor;
 
   /// 文本字体大小
-  final double fontSize;
+  final double? fontSize;
 
   /// 文本是否加粗
   final bool isBold;
@@ -20,13 +20,13 @@ class TextCornersButton extends StatefulWidget {
   final double width;
 
   /// 按钮高度
-  final double height;
+  final double? height;
 
   /// 按钮外边距
   final EdgeInsetsGeometry margin;
 
   /// 按钮单击事件
-  final OnTextButtonCall buttonCall;
+  final OnTextButtonCall? buttonCall;
 
   /// 渐变颜色(从左到右)
   final List<Color> gradientColors;
@@ -35,7 +35,7 @@ class TextCornersButton extends StatefulWidget {
   final double radius;
 
   const TextCornersButton(
-      {Key key,
+      {Key? key,
       this.text,
       this.textColor = Colors.white,
       this.fontSize,
@@ -61,7 +61,7 @@ class _TextCornersButtonState extends State<TextCornersButton> {
       margin: widget.margin,
       child: TextButton(
         child: Text(
-          widget.text,
+          widget.text ?? "",
           style: TextStyle(
               color: widget.textColor,
               fontSize: widget.fontSize ?? MediaUtils.instance.sp(13),
