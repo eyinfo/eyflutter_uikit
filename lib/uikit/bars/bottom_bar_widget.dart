@@ -182,10 +182,10 @@ class _Style extends StyleHook {
   _Style({this.navIconSize, this.convexIconMargin, this.fontSize});
 
   @override
-  double? get activeIconSize => navIconSize;
+  double get activeIconSize => navIconSize??0;
 
   @override
-  double? get activeIconMargin => this.convexIconMargin;
+  double get activeIconMargin => this.convexIconMargin??0;
 
   @override
   double? get iconSize => this.navIconSize;
