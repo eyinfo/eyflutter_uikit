@@ -1,6 +1,6 @@
 name: eyflutter_uikit
 description: eyflutter项目工具库
-version: 0.0.1+5
+version: 0.0.1+6
 homepage: https://github.com/eyinfo/eyflutter_uikit
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   uni_links: ^0.5.1
-  eyflutter_core: ^0.0.3+1
+  eyflutter_core: ^0.0.3+9
   flutter_easyrefresh: ^2.2.1
   convex_bottom_bar: ^3.0.0
   percent_indicator: ^3.0.1

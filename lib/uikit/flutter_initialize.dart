@@ -48,20 +48,21 @@ class FlutterInitialize {
   void start({required OnInitializeListener listener}) async {
     WidgetsFlutterBinding.ensureInitialized();
     Logger.instance.builder?.setLogListener(LogHandler()).setPrintLog(true);
-    await listener.startSyncCall();
-    var appWidget = listener.buildAppWidget(defaultRout: window.defaultRouteName);
-    CrashHandler.instance.build(appWidget,
-        report: (crashInfo) {
-          listener.crashReportCall(crashInfo);
-        },
-        environment: listener.environment(),
-        completedCall: () {
-          listener.crashCompletedCall();
-        });
-    listener.startCall();
-    MediaUtils.instance.initialize(375);
-    LangStorage.instance.loadLang();
-    overlayStyle();
+    listener.startSyncCall().then((value) {
+      var appWidget = listener.buildAppWidget(defaultRout: window.defaultRouteName);
+      CrashHandler.instance.build(appWidget,
+          report: (crashInfo) {
+            listener.crashReportCall(crashInfo);
+          },
+          environment: listener.environment(),
+          completedCall: () {
+            listener.crashCompletedCall();
+          });
+      listener.startCall();
+      MediaUtils.instance.initialize(375);
+      LangStorage.instance.loadLang();
+      overlayStyle();
+    });
   }
 
   void overlayStyle() {
